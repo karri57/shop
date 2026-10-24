@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 760" role="img" aria-labelledby="title">
+  <title id="title">Blank classic hoodie</title>
+  <rect width="600" height="760" fill="#f3f3f1"/>
+  <path d="M222 148c-23-70 12-118 78-118s101 48 78 118l-18 45H240l-18-45Z" fill="#b9b9b4" stroke="#161616" stroke-width="8" stroke-linejoin="round"/>
+  <path d="m204 138-98 52-70 250 96 30 47-125v292c77 24 165 24 242 0V345l47 125 96-30-70-250-98-52c-17 31-51 50-96 50s-79-19-96-50Z" fill="#777773" stroke="#161616" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M222 148c18 28 44 42 78 42s60-14 78-42M242 193l-20 102m136-102 20 102" fill="none" stroke="#161616" stroke-width="6"/>
+  <path d="M235 492h130l32 98H203l32-98Z" fill="#858581" stroke="#161616" stroke-width="6" stroke-linejoin="round"/>
+</svg>

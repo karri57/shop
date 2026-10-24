@@ -7,6 +7,12 @@
 
 {%- liquid
   assign designer_url = section.settings.designer_url | default: '/pages/design-studio'
+  assign has_picker_designs = false
+  for block in section.blocks
+    if block.type == 'design' and block.settings.image != blank
+      assign has_picker_designs = true
+    endif
+  endfor
 -%}
 
 <div class="page-width section picker">
@@ -27,7 +33,7 @@
 
       assign has_cards = false
       for block in section.blocks
-        if block.type == 'product' and block.settings.garment == garment and block.settings.image != blank
+        if block.type == 'product' and block.settings.garment == garment
           assign has_cards = true
         endif
       endfor
@@ -38,13 +44,30 @@
         <h2 class="picker__row-heading">{{ row_heading }}</h2>
         <div class="picker__grid">
           {%- for block in section.blocks -%}
-            {%- if block.type == 'product' and block.settings.garment == garment and block.settings.image != blank -%}
+            {%- if block.type == 'product' and block.settings.garment == garment -%}
               {%- liquid
                 assign colorway_names = block.settings.color_1_name | default: 'Standard'
                 assign colorway_names = colorway_names | append: '||' | append: block.settings.color_2_name
                 assign colorway_names = colorway_names | append: '||' | append: block.settings.color_3_name
                 assign colorway_names = colorway_names | append: '||' | append: block.settings.color_4_name
                 assign colorway_names = colorway_names | split: '||'
+
+                assign label_down = block.settings.label | downcase
+                assign fallback_asset = 'custom-tee.svg'
+                if label_down contains 'hoodie'
+                  assign fallback_asset = 'custom-hoodie.svg'
+                elsif label_down contains 'polo'
+                  assign fallback_asset = 'custom-polo.svg'
+                elsif label_down contains 'sweater'
+                  assign fallback_asset = 'custom-sweater.svg'
+                endif
+
+                assign primary_image_url = fallback_asset | asset_url
+                assign primary_image_height = 760
+                if block.settings.image != blank
+                  assign primary_image_url = block.settings.image | image_url: width: 600
+                  assign primary_image_height = 600 | divided_by: block.settings.image.aspect_ratio | default: 750
+                endif
               -%}
               <div class="picker-card" {{ block.shopify_attributes }}>
               <a href="{{ designer_url }}?canvas={{ block.settings.label | handleize }}" class="picker-card__link">
@@ -56,15 +79,19 @@
                           { "src": {{ design_block.settings.image | image_url: width: 240 | json }} },
                         {%- endif -%}
                       {%- endfor -%}
+                      {%- unless has_picker_designs -%}
+                        { "src": {{ 'custom-design-cross.svg' | asset_url | json }} },
+                        { "src": {{ 'custom-design-faith.svg' | asset_url | json }} },
+                      {%- endunless -%}
                       null
                     ]
                   </script>
                   <div class="showcase__stage" data-demo-stage>
                     <img
-                      src="{{ block.settings.image | image_url: width: 600 }}"
+                      src="{{ primary_image_url }}"
                       alt="{{ block.settings.label | escape }}"
                       width="600"
-                      height="{{ 600 | divided_by: block.settings.image.aspect_ratio | default: 750 }}"
+                      height="{{ primary_image_height }}"
                       class="showcase__shirt showcase__frame showcase__frame--active"
                       data-demo-frame
                       loading="lazy"
@@ -143,7 +170,7 @@
 
   {%- assign has_products = false -%}
   {%- for block in section.blocks -%}
-    {%- if block.type == 'product' and block.settings.image != blank -%}
+    {%- if block.type == 'product' -%}
       {%- assign has_products = true -%}
     {%- endif -%}
   {%- endfor -%}

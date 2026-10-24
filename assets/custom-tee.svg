@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 760" role="img" aria-labelledby="title">
+  <title id="title">Blank classic tee</title>
+  <rect width="600" height="760" fill="#f3f3f1"/>
+  <path d="M190 110 92 160 36 326l104 36 38-92v370c78 24 166 24 244 0V270l38 92 104-36-56-166-98-50c-19 43-61 68-110 68s-91-25-110-68Z" fill="#d7d7d2" stroke="#161616" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M224 103c8 37 34 58 76 58s68-21 76-58" fill="none" stroke="#161616" stroke-width="8"/>
+  <path d="M178 270v370M422 270v370" fill="none" stroke="#161616" stroke-opacity=".16" stroke-width="4"/>
+</svg>

@@ -30,7 +30,15 @@
     </div>
 
     <div class="customizer-promo__visual">
-      {%- if section.settings.shirt_image != blank -%}
+      {%- if section.settings.shirt_image != blank or section.settings.image == blank -%}
+        {%- liquid
+          assign has_demo_designs = false
+          for block in section.blocks
+            if block.type == 'design' and block.settings.image != blank
+              assign has_demo_designs = true
+            endif
+          endfor
+        -%}
         <showcase-demo
           class="showcase"
           data-zone="{{ section.settings.zone_x | default: 50 }},{{ section.settings.zone_y | default: 42 }},{{ section.settings.zone_w | default: 32 }},{{ section.settings.zone_h | default: 28 }}"
@@ -42,20 +50,35 @@
                   { "src": {{ block.settings.image | image_url: width: 300 | json }} },
                 {%- endif -%}
               {%- endfor -%}
+              {%- unless has_demo_designs -%}
+                { "src": {{ 'custom-design-cross.svg' | asset_url | json }} },
+                { "src": {{ 'custom-design-faith.svg' | asset_url | json }} },
+              {%- endunless -%}
               null
             ]
           </script>
 
           <div class="showcase__stage" data-demo-stage>
-            {{ section.settings.shirt_image
-              | image_url: width: 900
-              | image_tag:
-                alt: section.settings.shirt_image.alt,
-                class: 'showcase__shirt',
-                widths: '420, 600, 750, 900',
-                sizes: '(min-width: 990px) 42vw, (min-width: 750px) 48vw, calc(100vw - 2rem)',
-                loading: 'lazy'
-            }}
+            {%- if section.settings.shirt_image != blank -%}
+              {{ section.settings.shirt_image
+                | image_url: width: 900
+                | image_tag:
+                  alt: section.settings.shirt_image.alt,
+                  class: 'showcase__shirt',
+                  widths: '420, 600, 750, 900',
+                  sizes: '(min-width: 990px) 42vw, (min-width: 750px) 48vw, calc(100vw - 2rem)',
+                  loading: 'lazy'
+              }}
+            {%- else -%}
+              <img
+                src="{{ 'custom-hoodie.svg' | asset_url }}"
+                alt="Blank hoodie ready to customize"
+                width="600"
+                height="760"
+                class="showcase__shirt"
+                loading="lazy"
+              >
+            {%- endif -%}
             <div class="showcase__layer" data-demo-placements></div>
           </div>
 

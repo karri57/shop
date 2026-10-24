@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 760" role="img" aria-labelledby="title">
+  <title id="title">Blank classic polo</title>
+  <rect width="600" height="760" fill="#f3f3f1"/>
+  <path d="m190 112-98 50-56 164 104 36 38-92v370c78 24 166 24 244 0V270l38 92 104-36-56-164-98-50-54 58H244l-54-58Z" fill="#f7f7f4" stroke="#161616" stroke-width="8" stroke-linejoin="round"/>
+  <path d="m190 112 54 58 56-20 56 20 54-58M300 150v132" fill="none" stroke="#161616" stroke-width="8" stroke-linejoin="round"/>
+  <circle cx="316" cy="197" r="5" fill="#161616"/><circle cx="316" cy="228" r="5" fill="#161616"/>
+</svg>

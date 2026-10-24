@@ -1,4 +1,4 @@
-<section class="customizer-promo">
+<section class="customizer-promo customizer-promo--{{ section.settings.color_scheme }}">
   <div class="page-width customizer-promo__inner">
     <div class="customizer-promo__content">
       {%- if section.settings.eyebrow != blank -%}
@@ -11,9 +11,22 @@
       {%- if section.settings.text != blank -%}
         <p class="customizer-promo__text">{{ section.settings.text }}</p>
       {%- endif -%}
-      <a href="{{ section.settings.link | default: '/pages/design-studio' }}" class="button">
-        {{ section.settings.button_label }}
-      </a>
+
+      <ol class="customizer-promo__steps">
+        <li><span>01</span>{{ section.settings.step_1 }}</li>
+        <li><span>02</span>{{ section.settings.step_2 }}</li>
+        <li><span>03</span>{{ section.settings.step_3 }}</li>
+      </ol>
+
+      <div class="customizer-promo__action">
+        <a href="{{ section.settings.link | default: '/pages/create-your-own' }}" class="button customizer-promo__button">
+          {{ section.settings.button_label }}
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+        {%- if section.settings.trust_note != blank -%}
+          <p class="customizer-promo__trust">{{ section.settings.trust_note }}</p>
+        {%- endif -%}
+      </div>
     </div>
 
     <div class="customizer-promo__visual">
@@ -34,14 +47,15 @@
           </script>
 
           <div class="showcase__stage" data-demo-stage>
-            <img
-              src="{{ section.settings.shirt_image | image_url: width: 900 }}"
-              alt="{{ section.settings.shirt_image.alt | escape }}"
-              width="900"
-              height="{{ 900 | divided_by: section.settings.shirt_image.aspect_ratio | default: 900 }}"
-              class="showcase__shirt"
-              draggable="false"
-            >
+            {{ section.settings.shirt_image
+              | image_url: width: 900
+              | image_tag:
+                alt: section.settings.shirt_image.alt,
+                class: 'showcase__shirt',
+                widths: '420, 600, 750, 900',
+                sizes: '(min-width: 990px) 42vw, (min-width: 750px) 48vw, calc(100vw - 2rem)',
+                loading: 'lazy'
+            }}
             <div class="showcase__layer" data-demo-placements></div>
           </div>
 
@@ -49,14 +63,10 @@
             {%- for block in section.blocks -%}
               {%- if block.type == 'design' and block.settings.image != blank -%}
                 <span class="showcase__chip" data-demo-chip {{ block.shopify_attributes }}>
-                  <img
-                    src="{{ block.settings.image | image_url: width: 150 }}"
-                    alt=""
-                    width="150"
-                    height="{{ 150 | divided_by: block.settings.image.aspect_ratio | default: 150 }}"
-                    loading="lazy"
-                    draggable="false"
-                  >
+                  {{ block.settings.image
+                    | image_url: width: 150
+                    | image_tag: alt: '', loading: 'lazy', width: 150
+                  }}
                 </span>
               {%- endif -%}
             {%- endfor -%}
@@ -71,13 +81,14 @@
 
         <script src="{{ 'customizer-promo.js' | asset_url }}" type="module"></script>
       {%- elsif section.settings.image != blank -%}
-        <img
-          src="{{ section.settings.image | image_url: width: 900 }}"
-          alt="{{ section.settings.image.alt | escape }}"
-          width="900"
-          height="{{ 900 | divided_by: section.settings.image.aspect_ratio | default: 900 }}"
-          loading="lazy"
-        >
+        {{ section.settings.image
+          | image_url: width: 900
+          | image_tag:
+            alt: section.settings.image.alt,
+            widths: '420, 600, 750, 900',
+            sizes: '(min-width: 990px) 42vw, (min-width: 750px) 48vw, calc(100vw - 2rem)',
+            loading: 'lazy'
+        }}
       {%- else -%}
         <svg viewBox="0 0 400 460" aria-hidden="true" class="customizer-promo__tee">
           <path d="M118 60 L62 92 L20 210 L92 240 L108 196 L108 420 Q200 442 292 420 L292 196 L308 240 L380 210 L338 92 L282 60 Q252 34 200 36 Q148 34 118 60 Z" fill="#ffffff" stroke="rgb(0 0 0 / 20%)" stroke-width="2"/>
@@ -94,12 +105,26 @@
 {
   "name": "Customizer promo",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "KA Studio" },
-    { "type": "text", "id": "heading_solid", "label": "Heading (solid)", "default": "Design it" },
-    { "type": "text", "id": "heading_outline", "label": "Heading (outlined)", "default": "yourself" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Grab a design and drop it anywhere on the shirt — see what's possible, then build the real thing." },
-    { "type": "text", "id": "button_label", "label": "Button label", "default": "Start designing" },
-    { "type": "url", "id": "link", "label": "Button link", "info": "Defaults to /pages/design-studio" },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "dark", "label": "Dark" },
+        { "value": "light", "label": "Light" }
+      ],
+      "default": "dark"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "KA Design Studio" },
+    { "type": "text", "id": "heading_solid", "label": "Heading (solid)", "default": "Make it" },
+    { "type": "text", "id": "heading_outline", "label": "Heading (outlined)", "default": "your own" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Choose the piece. Place the artwork. Finish with a one-of-one design made by you." },
+    { "type": "text", "id": "step_1", "label": "Step 1", "default": "Choose your piece" },
+    { "type": "text", "id": "step_2", "label": "Step 2", "default": "Build your design" },
+    { "type": "text", "id": "step_3", "label": "Step 3", "default": "Wear the only one" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Create yours" },
+    { "type": "url", "id": "link", "label": "Button link", "info": "Defaults to /pages/create-your-own" },
+    { "type": "text", "id": "trust_note", "label": "Note under button", "default": "No design experience needed · Secure checkout" },
     {
       "type": "image_picker",
       "id": "shirt_image",
@@ -137,4 +162,3 @@
   ]
 }
 {% endschema %}
-

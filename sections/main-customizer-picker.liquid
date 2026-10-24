@@ -6,7 +6,7 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign designer_url = section.settings.designer_url | default: '/pages/designer'
+  assign designer_url = section.settings.designer_url | default: '/pages/design-studio'
 -%}
 
 <div class="page-width section picker">
@@ -163,7 +163,7 @@
     { "type": "text", "id": "tee_row_heading", "label": "Shirts row heading", "default": "Shirts" },
     { "type": "text", "id": "hoodie_row_heading", "label": "Hoodies row heading", "default": "Hoodies" },
     { "type": "text", "id": "card_cta", "label": "Card call to action", "default": "Customize this" },
-    { "type": "url", "id": "designer_url", "label": "Designer page", "info": "Defaults to /pages/designer" }
+    { "type": "url", "id": "designer_url", "label": "Designer page", "info": "Defaults to /pages/design-studio" }
   ],
   "blocks": [
     {

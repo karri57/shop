@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex">
+    {%- assign gift_card_value = gift_card.initial_value | money -%}
+    <title>{{ 'gift_cards.issued.title' | t: value: gift_card_value, shop: shop.name }}</title>
+    <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
+    {%- render 'css-variables' -%}
+  </head>
+  <body>
+    <div class="page-width section" style="text-align: center; max-width: 32rem; margin-inline: auto;">
+      <p class="breadcrumb">{{ 'gift_cards.issued.subtext' | t }}</p>
+      <h1 class="section__heading" style="margin-bottom: 1.5rem;">
+        {{ 'gift_cards.issued.title' | t: value: gift_card_value, shop: shop.name }}
+      </h1>
+
+      {%- if gift_card.image -%}
+        <img
+          src="{{ gift_card.image | image_url: width: 400 }}"
+          alt=""
+          width="400"
+          height="{{ 400 | divided_by: gift_card.image.aspect_ratio | default: 250 }}"
+          style="margin-inline: auto; margin-bottom: 1.5rem; border-radius: var(--radius);"
+        >
+      {%- endif -%}
+
+      <div style="border: 1px dashed var(--color-border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;">
+        <p class="field__label">{{ 'gift_cards.issued.gift_card_code' | t }}</p>
+        <p style="font-size: 1.5rem; letter-spacing: 0.1em;">{{ gift_card.code | format_code }}</p>
+        {%- if gift_card.expires_on -%}
+          <p class="cart-drawer__note-text">{{ 'gift_cards.issued.expiration_date' | t: expires_on: gift_card.expires_on }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- unless gift_card.enabled -%}
+        <p class="form-error">{{ 'gift_cards.issued.disabled' | t }}</p>
+      {%- endunless -%}
+
+      <a href="{{ shop.url }}" class="button">{{ 'gift_cards.issued.shop_link' | t }}</a>
+    </div>
+  </body>
+</html>

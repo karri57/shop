@@ -1,0 +1,213 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Karrionamir Custom",
+    "theme_version": "1.0.0",
+    "theme_author": "Karrionamir",
+    "theme_documentation_url": "https://github.com/karri57/karrionamir-com-fabric",
+    "theme_support_email": "support@karrionamir.com"
+  },
+  {
+    "name": "Logo",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo image"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "label": "Logo width",
+        "min": 60,
+        "max": 300,
+        "step": 10,
+        "unit": "px",
+        "default": 140
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      }
+    ]
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Background",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_foreground",
+        "label": "Text / foreground",
+        "default": "#030302"
+      },
+      {
+        "type": "color",
+        "id": "color_border",
+        "label": "Borders / accent",
+        "default": "#d3cec5"
+      },
+      {
+        "type": "color",
+        "id": "color_surface",
+        "label": "Muted surface",
+        "default": "#f5f5f5"
+      },
+      {
+        "type": "color",
+        "id": "color_sale",
+        "label": "Sale / badge",
+        "default": "#b3261e"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "font_picker",
+        "id": "font_heading",
+        "label": "Heading font",
+        "default": "inter_n7"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_body",
+        "label": "Body font",
+        "default": "inter_n4"
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "page_width",
+        "label": "Page width",
+        "min": 1000,
+        "max": 1600,
+        "step": 20,
+        "unit": "px",
+        "default": 1400
+      },
+      {
+        "type": "range",
+        "id": "spacing_sections",
+        "label": "Space between sections",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "default": 48
+      },
+      {
+        "type": "range",
+        "id": "corner_radius",
+        "label": "Corner radius",
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "unit": "px",
+        "default": 2
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Cart behavior",
+        "options": [
+          { "value": "drawer", "label": "Drawer" },
+          { "value": "page", "label": "Page" }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_note",
+        "label": "Show order note field",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping threshold",
+        "info": "Shown as a progress bar in the cart drawer. Set to 0 to hide. Make sure a matching free-shipping rate exists in Settings → Shipping.",
+        "min": 0,
+        "max": 500,
+        "step": 5,
+        "unit": "$",
+        "default": 150
+      }
+    ]
+  },
+  {
+    "name": "Design studio",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Optional: save each customer design as an image attached to the order. Create a free Cloudinary account (cloudinary.com), then in its Settings → Upload add an 'unsigned' upload preset and enter both values below. Orders then include a 'Design preview' link showing exactly what the customer made."
+      },
+      {
+        "type": "text",
+        "id": "design_upload_cloud",
+        "label": "Cloudinary cloud name"
+      },
+      {
+        "type": "text",
+        "id": "design_upload_preset",
+        "label": "Cloudinary unsigned upload preset"
+      }
+    ]
+  },
+  {
+    "name": "Newsletter",
+    "settings": [
+      {
+        "type": "range",
+        "id": "newsletter_discount_percent",
+        "label": "Welcome discount percent",
+        "info": "Shown in the product page's \"join our newsletter\" line and signup popup. Signing up creates a real customer in Shopify, marked as subscribed to marketing — you still need to create the matching discount code in Shopify admin (Discounts) and, if you want it emailed automatically, a Shopify Email/Flow welcome automation.",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "default": 10
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram URL"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook URL"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok URL"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest",
+        "label": "Pinterest URL"
+      }
+    ]
+  }
+]

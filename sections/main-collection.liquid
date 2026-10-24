@@ -1,0 +1,91 @@
+{%- paginate collection.products by 50 -%}
+  <div class="page-width collection collection--editorial">
+    <h1 class="visually-hidden">{{ collection.title }}</h1>
+
+    <div class="collection-toolbar">
+      <details class="collection-filter">
+        <summary class="collection-filter__toggle">
+          {% render 'icon', name: 'filter' %}
+          {{ 'collections.general.filter_by' | t }}
+        </summary>
+        <div class="collection-filter__panel">
+          <form action="{{ collection.url }}" method="get">
+            <label class="field__label" for="SortBy">{{ 'collections.general.sort_by' | t }}</label>
+            <select name="sort_by" id="SortBy" class="select" onchange="this.form.submit()">
+              {%- for option in collection.sort_options -%}
+                <option value="{{ option.value }}" {% if option.value == collection.sort_by %}selected{% endif %}>
+                  {{ option.name }}
+                </option>
+              {%- endfor -%}
+            </select>
+          </form>
+        </div>
+      </details>
+
+      <div class="collection-toolbar__layouts" aria-label="Product layout">
+        <button type="button" data-collection-layout="single" aria-label="One product per row">
+          {% render 'icon', name: 'one-col-mobile' %}
+        </button>
+        <button type="button" data-collection-layout="grid" aria-label="Two products per row" aria-current="true">
+          {% render 'icon', name: 'grid-default' %}
+        </button>
+      </div>
+    </div>
+
+    {%- liquid
+      assign page_types = collection.products | map: 'type' | uniq
+    -%}
+    {%- if section.settings.show_type_tabs and page_types.size > 0 -%}
+      <filter-tabs class="filter-tabs" role="tablist" aria-label="{{ 'collections.general.filter_by' | t }}">
+        <button type="button" class="filter-tab" data-filter="all" aria-current="true">{{ 'collections.general.view_all' | t }}</button>
+        {%- for type in page_types -%}
+          {%- unless type == blank -%}
+            <button type="button" class="filter-tab" data-filter="{{ type | handleize }}" aria-current="false">{{ type }}</button>
+          {%- endunless -%}
+        {%- endfor -%}
+      </filter-tabs>
+    {%- endif -%}
+
+    {%- if collection.products.size > 0 -%}
+      <div class="product-grid collection__product-grid" style="--grid-columns: {{ section.settings.columns }};">
+        {%- for product in collection.products -%}
+          {%- liquid
+            assign is_priority = false
+            if forloop.index <= 4
+              assign is_priority = true
+            endif
+          -%}
+          <div class="product-grid__item" data-product-type="{{ product.type | handleize }}">
+            {%- render 'product-card', product: product, priority: is_priority, first: forloop.first, quick_add_style: 'icon' -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <p>{{ 'collections.general.no_products' | t }}</p>
+    {%- endif -%}
+
+    {%- if paginate.pages > 1 -%}
+      <nav class="pagination" aria-label="Pagination">
+        {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}">&larr;</a>{%- endif -%}
+        {%- for part in paginate.parts -%}
+          {%- if part.is_link -%}
+            <a href="{{ part.url }}">{{ part.title }}</a>
+          {%- else -%}
+            <span aria-current="page">{{ part.title }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+        {%- if paginate.next -%}<a href="{{ paginate.next.url }}">&rarr;</a>{%- endif -%}
+      </nav>
+    {%- endif -%}
+  </div>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Collection",
+  "settings": [
+    { "type": "range", "id": "columns", "label": "Columns on desktop", "min": 2, "max": 5, "step": 1, "default": 4 },
+    { "type": "checkbox", "id": "show_type_tabs", "label": "Show category tabs", "default": false }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,153 @@
+{%- doc -%}
+  A single product grid card: image (+hover secondary image), badges, quick add,
+  title, price, color swatch dots.
+  @param {object} product
+  @param {boolean} [show_new_badge] - show a "New in" badge (default false)
+  @param {boolean} [priority] - eager-load the main image instead of lazy;
+    pass true for the first few above-the-fold cards in a grid so the browser
+    doesn't delay them behind a lazy-load scroll trigger (default false)
+  @param {boolean} [first] - additionally mark the image fetchpriority="high";
+    reserve for the single card most likely to be the page's LCP element
+    (default false)
+  @param {string} [quick_add_style] - "button" places a full-width button
+    below the card; all other values use the compact corner icon
+  @example
+  {% render 'product-card', product: product, show_new_badge: true, priority: is_priority, first: forloop.first %}
+{%- enddoc -%}
+
+{%- liquid
+  assign featured_image = product.featured_media.preview_image | default: product.featured_image
+  assign second_image = product.media[1].preview_image
+  assign on_sale = false
+  if product.compare_at_price_max > product.price_min
+    assign on_sale = true
+  endif
+  assign quick_add_variant = product.selected_or_first_available_variant
+  assign color_option = nil
+  assign has_multiple_colors = false
+  for option in product.options_with_values
+    assign option_name_down = option.name | downcase
+    if option_name_down contains 'color' or option_name_down contains 'colour'
+      assign color_option = option
+      if option.values.size > 1
+        assign has_multiple_colors = true
+      endif
+      break
+    endif
+  endfor
+
+  if quick_add_style == 'button' and has_multiple_colors == false and settings.newsletter_discount_percent > 0
+    assign discount_multiplier = 100 | minus: settings.newsletter_discount_percent | divided_by: 100.0
+    assign newsletter_price = product.price_min | times: discount_multiplier | round | money
+  endif
+-%}
+
+<div class="product-card">
+  <div class="product-card__media">
+    <a href="{{ product.url }}" class="product-card__media-link">
+      {%- if featured_image -%}
+        <img
+          src="{{ featured_image | image_url: width: 600 }}"
+          alt="{{ featured_image.alt | default: product.title | escape }}"
+          width="600"
+          height="{{ 600 | divided_by: featured_image.aspect_ratio | default: 750 }}"
+          {% if priority %}loading="eager"{% if first %} fetchpriority="high"{% endif %}{% else %}loading="lazy"{% endif %}
+        >
+      {%- endif -%}
+      {%- if second_image -%}
+        <img
+          src="{{ second_image | image_url: width: 600 }}"
+          alt=""
+          width="600"
+          height="{{ 600 | divided_by: second_image.aspect_ratio | default: 750 }}"
+          loading="lazy"
+        >
+      {%- endif -%}
+    </a>
+
+    {%- if show_new_badge -%}
+      <span class="product-card__badge product-card__badge--new">{{ 'products.product.new_in' | t }}</span>
+    {%- endif -%}
+
+    {%- if product.available == false -%}
+      <span class="product-card__badge product-card__badge--end">{{ 'products.product.sold_out' | t }}</span>
+    {%- elsif on_sale -%}
+      <span class="product-card__badge product-card__badge--end product-card__badge--sale">{{ 'products.product.sale' | t }}</span>
+    {%- endif -%}
+
+    {%- if product.available and quick_add_style != 'button' -%}
+      <button
+        type="button"
+        class="product-card__quick-add"
+        data-quick-add
+        data-product-url="{{ product.url }}"
+        data-variant-id="{{ quick_add_variant.id }}"
+        aria-label="{{ 'products.product.choose_options' | t }}: {{ product.title | escape }}"
+      >
+        {% render 'icon', name: 'plus' %}
+      </button>
+    {%- endif -%}
+  </div>
+
+  <a href="{{ product.url }}" class="product-card__link">
+    <div class="product-card__title">{{ product.title }}</div>
+    <div class="product-card__price">
+      {%- if product.price_varies -%}
+        {{ 'products.product.from_price' | t: price: product.price_min | money }}
+      {%- else -%}
+        {%- render 'price', product: product -%}
+      {%- endif -%}
+    </div>
+  </a>
+
+  {%- if quick_add_style == 'button' -%}
+    <div class="product-card__decision-slot">
+      {%- if has_multiple_colors -%}
+        <div class="swatch-dots" aria-label="{{ color_option.name | escape }}">
+          {%- for value in color_option.values -%}
+            <span
+              class="swatch-dot"
+              style="background: var(--color-border); background: {% render 'swatch-color', value: value %};"
+              title="{{ value | escape }}"
+            ></span>
+          {%- endfor -%}
+        </div>
+      {%- elsif newsletter_price and product.available -%}
+        <p class="product-card__newsletter-price">
+          {{ 'products.product.newsletter_incentive' | t: price: newsletter_price }}
+          <button type="button" data-dialog-open="newsletter-modal">
+            {{ 'products.product.newsletter_incentive_link' | t }}
+          </button>
+        </p>
+      {%- endif -%}
+    </div>
+
+    <button
+      type="button"
+      class="product-card__add-button"
+      {% if product.available %}
+        data-quick-add
+        data-product-url="{{ product.url }}"
+        data-variant-id="{{ quick_add_variant.id }}"
+      {% else %}
+        disabled
+      {% endif %}
+    >
+      {%- if product.available -%}
+        {{ 'products.product.add_to_cart' | t }}
+      {%- else -%}
+        {{ 'products.product.sold_out' | t }}
+      {%- endif -%}
+    </button>
+  {%- elsif color_option -%}
+    <div class="swatch-dots" aria-label="{{ color_option.name | escape }}">
+      {%- for value in color_option.values -%}
+        <span
+          class="swatch-dot"
+          style="background: var(--color-border); background: {% render 'swatch-color', value: value %};"
+          title="{{ value | escape }}"
+        ></span>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>

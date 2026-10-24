@@ -1,0 +1,66 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {
+        "show_newsletter_incentive": true
+      },
+      "blocks": {
+        "product_details": {
+          "type": "accordion_item",
+          "settings": {
+            "title": "Product details",
+            "use_description": true,
+            "open_by_default": true
+          }
+        },
+        "size_chart": {
+          "type": "accordion_item",
+          "settings": {
+            "title": "Size chart",
+            "open_by_default": false,
+            "use_description": false,
+            "content": "",
+            "limit_product_types": ""
+          }
+        },
+        "shipping_details": {
+          "type": "accordion_item",
+          "settings": {
+            "title": "Shipping details",
+            "open_by_default": false,
+            "use_description": false,
+            "content": ""
+          }
+        },
+        "garment_care": {
+          "type": "accordion_item",
+          "settings": {
+            "title": "Garment care",
+            "open_by_default": false,
+            "use_description": false,
+            "content": "<ul><li>Machine wash cold.</li><li>Wash separately.</li><li>Use a low-spin or no-spin cycle.</li><li>Do not bleach.</li><li>Hang dry only.</li></ul>"
+          }
+        }
+      },
+      "block_order": ["product_details", "size_chart", "shipping_details", "garment_care"]
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "heading": "You may also like",
+        "limit": 4
+      }
+    }
+  },
+  "order": ["main", "recommendations"]
+}

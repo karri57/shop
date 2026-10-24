@@ -1,0 +1,105 @@
+<footer class="footer">
+  <div class="page-width">
+    <div class="footer__grid">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'menu' -%}
+            <div {{ block.shopify_attributes }}>
+              <div class="footer__heading">{{ block.settings.heading }}</div>
+              <ul class="footer__list">
+                {%- for link in block.settings.menu.links -%}
+                  <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                {%- endfor -%}
+              </ul>
+            </div>
+
+          {%- when 'text' -%}
+            <div {{ block.shopify_attributes }}>
+              <div class="footer__heading">{{ block.settings.heading }}</div>
+              <div class="rich-text">{{ block.settings.text }}</div>
+            </div>
+
+          {%- when 'newsletter' -%}
+            <div id="newsletter" {{ block.shopify_attributes }}>
+              <div class="footer__heading footer__newsletter-heading">{{ block.settings.heading }}</div>
+              {%- if block.settings.text != blank -%}
+                <div class="footer__newsletter-text">{{ block.settings.text }}</div>
+              {%- endif -%}
+              {%- form 'customer', id: 'footer-newsletter' -%}
+                <input type="hidden" name="contact[tags]" value="newsletter">
+                <div class="footer__newsletter-form">
+                  <input
+                    type="email"
+                    name="contact[email]"
+                    class="field__input"
+                    placeholder="{{ 'newsletter.email_placeholder' | t }}"
+                    aria-label="{{ 'newsletter.email_placeholder' | t }}"
+                    required
+                  >
+                  <button type="submit" class="footer__newsletter-submit" aria-label="{{ 'newsletter.submit' | t }}">
+                    <span aria-hidden="true">&rarr;</span>
+                  </button>
+                </div>
+                {%- if form.posted_successfully? -%}
+                  <p class="cart-drawer__note-text">{{ 'newsletter.success' | t }}</p>
+                {%- endif -%}
+              {%- endform -%}
+
+              <div class="footer__social">
+                {%- if settings.social_instagram != blank -%}<a href="{{ settings.social_instagram }}" aria-label="Instagram">Instagram</a>{%- endif -%}
+                {%- if settings.social_facebook != blank -%}<a href="{{ settings.social_facebook }}" aria-label="Facebook">Facebook</a>{%- endif -%}
+                {%- if settings.social_tiktok != blank -%}<a href="{{ settings.social_tiktok }}" aria-label="TikTok">TikTok</a>{%- endif -%}
+                {%- if settings.social_pinterest != blank -%}<a href="{{ settings.social_pinterest }}" aria-label="Pinterest">Pinterest</a>{%- endif -%}
+              </div>
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</span>
+      <div class="footer__legal">
+        {%- if shop.terms_of_service.body != blank -%}<a href="{{ shop.terms_of_service.url }}">Terms and Conditions</a>{%- endif -%}
+        {%- if shop.privacy_policy.body != blank -%}<a href="{{ shop.privacy_policy.url }}">Privacy Policy</a>{%- endif -%}
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Quick links" },
+        { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text block",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "About" },
+        { "type": "richtext", "id": "text", "label": "Text" }
+      ]
+    },
+    {
+      "type": "newsletter",
+      "name": "Newsletter",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Get exclusive deals and early access to new products." },
+        { "type": "richtext", "id": "text", "label": "Text" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "menu" },
+      { "type": "newsletter" }
+    ]
+  }
+}
+{% endschema %}

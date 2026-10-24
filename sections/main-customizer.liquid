@@ -1,0 +1,369 @@
+{%- comment -%}
+  Interactive design studio.
+
+  "Canvas" blocks each define a real garment - a name (matched by handle
+  against the picker page's card names, so ?canvas=<handle> opens the
+  right one), a product to sell, and up to four colorway name+photo
+  pairs shown as swatches. Each colorway may carry an optional back
+  photo so shoppers can design both sides. Shoppers place brand designs
+  (uploaded as Design blocks) onto the photo.
+
+  Layout: the garment is permanently visible and is the visual subject;
+  the controls are stepped (design -> colour -> size -> review) so the
+  shopper is guided rather than shown everything at once. The step nav
+  lives at the top of the control panel rather than in its own column,
+  so the panel can become a bottom sheet on phones without relocating
+  any DOM across breakpoints.
+
+  Add-to-cart posts the canvas's product with the design serialized
+  into line item properties (visible on the order in Shopify admin).
+{%- endcomment -%}
+
+{%- liquid
+  assign has_canvases = false
+  for block in section.blocks
+    if block.type == 'canvas' and block.settings.photo_1 != blank
+      assign has_canvases = true
+    endif
+  endfor
+-%}
+
+<ka-customizer class="page-width section kc">
+  {%- if has_canvases -%}
+    <script type="application/json" data-kc-config>
+      {
+        "designs": [
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'design' and block.settings.image != blank -%}
+              {
+                "label": {{ block.settings.label | default: 'Design' | json }},
+                "src": {{ block.settings.image | image_url: width: 500 | json }},
+                "price": {{ block.settings.price | default: 0 | json }}
+              },
+            {%- endif -%}
+          {%- endfor -%}
+          null
+        ],
+        "canvases": [
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'canvas' and block.settings.photo_1 != blank -%}
+              {%- assign canvas_variant = block.settings.product.selected_or_first_available_variant -%}
+              {%- assign back_1 = '' -%}
+              {%- if block.settings.photo_1_back != blank -%}{%- assign back_1 = block.settings.photo_1_back | image_url: width: 900 -%}{%- endif -%}
+              {%- assign back_2 = '' -%}
+              {%- if block.settings.photo_2_back != blank -%}{%- assign back_2 = block.settings.photo_2_back | image_url: width: 900 -%}{%- endif -%}
+              {%- assign back_3 = '' -%}
+              {%- if block.settings.photo_3_back != blank -%}{%- assign back_3 = block.settings.photo_3_back | image_url: width: 900 -%}{%- endif -%}
+              {%- assign back_4 = '' -%}
+              {%- if block.settings.photo_4_back != blank -%}{%- assign back_4 = block.settings.photo_4_back | image_url: width: 900 -%}{%- endif -%}
+              {%- assign has_zone = false -%}
+              {%- if block.settings.noprint_w > 0 and block.settings.noprint_h > 0 -%}{%- assign has_zone = true -%}{%- endif -%}
+              {
+                "key": {{ block.settings.label | handleize | json }},
+                "label": {{ block.settings.label | json }},
+                "variant": {{ canvas_variant.id | json }},
+                "price": {{ canvas_variant.price | json }},
+                "variants": [
+                  {%- for variant in block.settings.product.variants -%}
+                    {
+                      "id": {{ variant.id | json }},
+                      "title": {{ variant.title | json }},
+                      "available": {{ variant.available | json }},
+                      "price": {{ variant.price | json }}
+                    },
+                  {%- endfor -%}
+                  null
+                ],
+                "colorways": [
+                  {
+                    "name": {{ block.settings.color_1_name | default: 'Standard' | json }},
+                    "front": {{ block.settings.photo_1 | image_url: width: 900 | json }},
+                    "back": {{ back_1 | json }}
+                  },
+                  {%- if block.settings.photo_2 != blank -%}
+                    {
+                      "name": {{ block.settings.color_2_name | default: 'Colorway 2' | json }},
+                      "front": {{ block.settings.photo_2 | image_url: width: 900 | json }},
+                      "back": {{ back_2 | json }}
+                    },
+                  {%- endif -%}
+                  {%- if block.settings.photo_3 != blank -%}
+                    {
+                      "name": {{ block.settings.color_3_name | default: 'Colorway 3' | json }},
+                      "front": {{ block.settings.photo_3 | image_url: width: 900 | json }},
+                      "back": {{ back_3 | json }}
+                    },
+                  {%- endif -%}
+                  {%- if block.settings.photo_4 != blank -%}
+                    {
+                      "name": {{ block.settings.color_4_name | default: 'Colorway 4' | json }},
+                      "front": {{ block.settings.photo_4 | image_url: width: 900 | json }},
+                      "back": {{ back_4 | json }}
+                    },
+                  {%- endif -%}
+                  null
+                ],
+                "noGoZone": {%- if has_zone -%}
+                  { "x": {{ block.settings.noprint_x }}, "y": {{ block.settings.noprint_y }}, "w": {{ block.settings.noprint_w }}, "h": {{ block.settings.noprint_h }} }
+                {%- else -%}
+                  null
+                {%- endif -%}
+              },
+            {%- endif -%}
+          {%- endfor -%}
+          null
+        ],
+        "feeVariant": {{ section.settings.fee_product.selected_or_first_available_variant.id | json }},
+        "upload": {
+          "cloud": {{ settings.design_upload_cloud | json }},
+          "preset": {{ settings.design_upload_preset | json }}
+        }
+      }
+    </script>
+
+    <div class="kc__header">
+      <h1 class="kc__title">{{ section.settings.heading }}</h1>
+      {%- if section.settings.subtext != blank -%}
+        <p class="kc__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="kc__layout">
+      <div class="kc__stage-column">
+        <div class="kc__canvas-tabs" role="tablist" aria-label="Garment">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'canvas' and block.settings.photo_1 != blank -%}
+              <button
+                type="button"
+                data-kc-canvas="{{ block.settings.label | handleize }}"
+                aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+                {{ block.shopify_attributes }}
+              >
+                {{ block.settings.label }}
+              </button>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        <div class="kc__stage" data-kc-stage>
+          <div class="kc__garment-wrap" data-kc-frame>
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'canvas' and block.settings.photo_1 != blank -%}
+                {%- if forloop.first -%}
+                  <img
+                    src="{{ block.settings.photo_1 | image_url: width: 900 }}"
+                    alt="{{ block.settings.label | escape }}"
+                    width="900"
+                    height="{{ 900 | divided_by: block.settings.photo_1.aspect_ratio | default: 1100 }}"
+                    class="kc__photo"
+                    data-kc-photo
+                    crossorigin="anonymous"
+                    draggable="false"
+                  >
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+            <div class="kc__restricted" data-kc-restricted hidden></div>
+            <div class="kc__placements" data-kc-placements></div>
+          </div>
+
+          {%- comment -%}
+            Chrome floats over the stage so selecting a design never
+            reflows the page, and so the garment keeps the full frame.
+          {%- endcomment -%}
+          <div class="kc__toggle kc__view-switch" role="tablist" aria-label="Side" data-kc-photo-view-group hidden>
+            <button type="button" data-kc-view="front" aria-current="true">Front</button>
+            <button type="button" data-kc-view="back" aria-current="false">Back</button>
+          </div>
+
+          <div class="kc__selection-tools" data-kc-tools hidden aria-hidden="true">
+            <button type="button" data-kc-tool="smaller" aria-label="Smaller">&minus;</button>
+            <button type="button" data-kc-tool="bigger" aria-label="Bigger">+</button>
+            <button type="button" data-kc-tool="rotate-left" aria-label="Rotate left">&#8634;</button>
+            <button type="button" data-kc-tool="rotate-right" aria-label="Rotate right">&#8635;</button>
+            <button type="button" data-kc-tool="delete" aria-label="Remove design">{% render 'icon', name: 'delete' %}</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="kc__panel" data-kc-panel>
+        {%- comment -%}
+          The grip is outside .kc__stage on purpose: the stage owns
+          pinch/rotate via its own pointer handlers, and keeping the two
+          gesture surfaces in disjoint subtrees is what stops them
+          fighting.
+        {%- endcomment -%}
+        <div class="kc__sheet-grip" data-kc-sheet-handle>
+          <span class="kc__sheet-bar" aria-hidden="true"></span>
+          <button
+            type="button"
+            class="kc__sheet-toggle"
+            data-kc-sheet-toggle
+            aria-expanded="false"
+            aria-controls="kc-panel-body"
+          >
+            <span class="visually-hidden">{{ 'sections.customizer.expand_controls' | t }}</span>
+          </button>
+        </div>
+
+        <nav class="kc__steps-nav" data-kc-steps-nav aria-label="{{ 'sections.customizer.steps_label' | t }}">
+          <button type="button" class="kc__step-tab" data-kc-step="design" data-state="active" aria-current="true">
+            <span class="kc__step-mark" aria-hidden="true">1</span>
+            <span class="kc__step-text">
+              <span class="kc__step-name">{{ 'sections.customizer.step_design' | t }}</span>
+              <span class="kc__step-value" data-kc-step-value></span>
+            </span>
+          </button>
+          <button type="button" class="kc__step-tab" data-kc-step="size" data-state="todo" aria-current="false">
+            <span class="kc__step-mark" aria-hidden="true">2</span>
+            <span class="kc__step-text">
+              <span class="kc__step-name">{{ 'sections.customizer.step_size' | t }}</span>
+              <span class="kc__step-value" data-kc-step-value></span>
+            </span>
+          </button>
+          <button type="button" class="kc__step-tab" data-kc-step="review" data-state="todo" aria-current="false">
+            <span class="kc__step-mark" aria-hidden="true">3</span>
+            <span class="kc__step-text">
+              <span class="kc__step-name">{{ 'sections.customizer.step_review' | t }}</span>
+              <span class="kc__step-value" data-kc-step-value></span>
+            </span>
+          </button>
+        </nav>
+
+        <div class="kc__panel-body" id="kc-panel-body">
+          <section class="kc__step" data-kc-step-panel="design" data-state="active">
+            <h2 class="kc__step-heading" tabindex="-1" data-kc-step-focus>{{ 'sections.customizer.step_design_heading' | t }}</h2>
+            <div class="kc__designs" data-kc-designs>
+              <p class="kc__empty" data-kc-designs-empty>
+                {%- if request.design_mode -%}
+                  {{ 'sections.customizer.designs_empty_merchant' | t }}
+                {%- else -%}
+                  {{ 'sections.customizer.designs_empty' | t }}
+                {%- endif -%}
+              </p>
+            </div>
+            <p class="kc__hint">{{ 'sections.customizer.gesture_hint' | t }}</p>
+            <button type="button" class="button button--secondary kc__step-next" data-kc-step-next hidden>
+              {{ 'sections.customizer.continue' | t }}
+            </button>
+          </section>
+
+          <section class="kc__step" data-kc-step-panel="size" data-state="todo" hidden>
+            <h2 class="kc__step-heading" tabindex="-1" data-kc-step-focus>{{ 'sections.customizer.step_size_heading' | t }}</h2>
+            <div data-kc-size-group hidden>
+              <div class="kc__sizes" data-kc-sizes></div>
+            </div>
+          </section>
+
+          <section class="kc__step" data-kc-step-panel="review" data-state="todo" hidden>
+            <h2 class="kc__step-heading" tabindex="-1" data-kc-step-focus>{{ 'sections.customizer.step_review_heading' | t }}</h2>
+            <dl class="kc__summary" data-kc-summary></dl>
+            <button type="button" class="button button--secondary button--full" data-kc-download>
+              {{ 'sections.customizer.download' | t }}
+            </button>
+          </section>
+        </div>
+
+        <div class="kc__actions">
+          <button type="button" class="button button--full kc__add" data-kc-add hidden>
+            <span>{{ 'products.product.add_to_cart' | t }}</span>
+            <span class="kc__add-price" data-kc-price></span>
+          </button>
+          <p class="kc__note" data-kc-note hidden>
+            {{ 'sections.customizer.no_product_note' | t }}
+          </p>
+          <p class="form-error" data-kc-error role="alert" aria-live="polite" hidden></p>
+          <p class="kc__trust">{{ 'sections.customizer.trust_note' | t }}</p>
+        </div>
+      </div>
+    </div>
+  {%- else -%}
+    {%- comment -%}
+      Two audiences: never show theme-editor instructions to a shopper.
+    {%- endcomment -%}
+    <div class="kc__setup">
+      {%- if request.design_mode -%}
+        <h1 class="kc__title">{{ section.settings.heading }}</h1>
+        <p class="kc__setup-text">{{ 'sections.customizer.setup_prompt' | t }}</p>
+      {%- else -%}
+        <h1 class="kc__title">{{ 'sections.customizer.empty_title' | t }}</h1>
+        <p class="kc__setup-text">
+          <a class="link-underline" href="{{ routes.all_products_collection_url }}">
+            {{ 'sections.customizer.empty_link' | t }}
+          </a>
+        </p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</ka-customizer>
+
+<script src="{{ 'customizer.js' | asset_url }}" type="module"></script>
+
+{% schema %}
+{
+  "name": "Design studio",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Design studio" },
+    { "type": "textarea", "id": "subtext", "label": "Subtext", "default": "Pick a garment, place our designs, make it yours." },
+    {
+      "type": "header",
+      "content": "Design pricing"
+    },
+    {
+      "type": "product",
+      "id": "fee_product",
+      "label": "Customization fee product",
+      "info": "Create a hidden product priced at exactly $1.00 (e.g. \"Customization fee\") and pick it here. When designs below carry a price, the studio adds this product at a quantity equal to the total fee, so the extra charge appears on the order. Without it, design prices are ignored."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "canvas",
+      "name": "Canvas (garment)",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Name", "info": "Must match the card name on the picker page so clicking that card opens this garment.", "default": "Classic Tee" },
+        { "type": "product", "id": "product", "label": "Product to sell", "info": "Added to cart with the shopper's design attached as line item properties. Leave empty to hide add-to-cart for this garment." },
+        { "type": "header", "content": "Colorway 1" },
+        { "type": "text", "id": "color_1_name", "label": "Name", "default": "Standard" },
+        { "type": "image_picker", "id": "photo_1", "label": "Front photo", "info": "Required. Plain front-facing photo of this garment in this colorway." },
+        { "type": "image_picker", "id": "photo_1_back", "label": "Back photo", "info": "Optional. Lets shoppers flip to the back to place designs there too." },
+        { "type": "header", "content": "Colorway 2 (optional)" },
+        { "type": "text", "id": "color_2_name", "label": "Name" },
+        { "type": "image_picker", "id": "photo_2", "label": "Front photo" },
+        { "type": "image_picker", "id": "photo_2_back", "label": "Back photo" },
+        { "type": "header", "content": "Colorway 3 (optional)" },
+        { "type": "text", "id": "color_3_name", "label": "Name" },
+        { "type": "image_picker", "id": "photo_3", "label": "Front photo" },
+        { "type": "image_picker", "id": "photo_3_back", "label": "Back photo" },
+        { "type": "header", "content": "Colorway 4 (optional)" },
+        { "type": "text", "id": "color_4_name", "label": "Name" },
+        { "type": "image_picker", "id": "photo_4", "label": "Front photo" },
+        { "type": "image_picker", "id": "photo_4_back", "label": "Back photo" },
+        {
+          "type": "header",
+          "content": "Restricted area (optional)",
+          "info": "Keep designs off part of this garment — a pocket, seam, zipper, or existing print. Shown to shoppers as a soft hatched zone; designs slide away from it automatically. Leave width or height at 0 to turn it off. Not sure of the numbers? Open your Zone picker page to drag a box on the real photo and read them off."
+        },
+        { "type": "range", "id": "noprint_x", "label": "Center — horizontal", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
+        { "type": "range", "id": "noprint_y", "label": "Center — vertical", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 20 },
+        { "type": "range", "id": "noprint_w", "label": "Width", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 0 },
+        { "type": "range", "id": "noprint_h", "label": "Height", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 0 }
+      ]
+    },
+    {
+      "type": "design",
+      "name": "Design",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Name", "default": "Logo" },
+        { "type": "image_picker", "id": "image", "label": "Design image", "info": "Transparent PNGs work best." },
+        {
+          "type": "number",
+          "id": "price",
+          "label": "Extra charge (whole dollars)",
+          "info": "Added per placement of this design. Requires the fee product in the section settings. 0 = free."
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

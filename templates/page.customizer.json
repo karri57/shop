@@ -1,0 +1,145 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-customizer",
+      "blocks": {
+        "canvas_classic_tee": {
+          "type": "canvas",
+          "settings": {
+            "label": "Classic Tee",
+            "product": "custom-classic-tee",
+            "color_1_name": "Grey",
+            "photo_1": "shopify://shop_images/IMG_1444.jpg",
+            "color_2_name": "Navy & Pink",
+            "photo_2": "shopify://shop_images/IMG_1445.jpg",
+            "color_3_name": "Yellow & Black",
+            "photo_3": "shopify://shop_images/IMG_1446_07ca41c6-b940-4b64-9c64-2582579eeeee.jpg",
+            "color_4_name": "Grey & White",
+            "photo_4": "shopify://shop_images/IMG_1443.jpg",
+            "noprint_x": 50,
+            "noprint_y": 20,
+            "noprint_w": 0,
+            "noprint_h": 0
+          }
+        },
+        "canvas_classic_hoodie": {
+          "type": "canvas",
+          "settings": {
+            "label": "Classic Hoodie",
+            "product": "custom-classic-hoodie",
+            "color_1_name": "Heather",
+            "photo_1": "shopify://shop_images/IMG_1334.jpg",
+            "color_2_name": "Grey",
+            "photo_2": "shopify://shop_images/IMG_1337.jpg",
+            "color_3_name": "Black",
+            "photo_3": "shopify://shop_images/IMG_1333.jpg",
+            "color_4_name": "",
+            "noprint_x": 50,
+            "noprint_y": 20,
+            "noprint_w": 0,
+            "noprint_h": 0
+          }
+        },
+        "canvas_classic_polo": {
+          "type": "canvas",
+          "settings": {
+            "label": "Classic Polo",
+            "product": "custom-classic-polo",
+            "color_1_name": "White",
+            "photo_1": "shopify://shop_images/IMG_1433.jpg",
+            "color_2_name": "Navy",
+            "photo_2": "shopify://shop_images/IMG_1432.jpg",
+            "photo_2_back": "shopify://shop_images/IMG_1431.jpg",
+            "color_3_name": "Creme",
+            "photo_3": "shopify://shop_images/IMG_1434.jpg",
+            "color_4_name": "Purple",
+            "photo_4": "shopify://shop_images/IMG_1435.jpg",
+            "noprint_x": 50,
+            "noprint_y": 20,
+            "noprint_w": 0,
+            "noprint_h": 0
+          }
+        },
+        "canvas_classic_sweater": {
+          "type": "canvas",
+          "settings": {
+            "label": "Classic Sweater",
+            "product": "custom-classic-sweater",
+            "color_1_name": "White & Black",
+            "photo_1": "shopify://shop_images/IMG_1439.jpg",
+            "color_2_name": "White & Brown",
+            "photo_2": "shopify://shop_images/IMG_1440.jpg",
+            "color_3_name": "Red & Navy",
+            "photo_3": "shopify://shop_images/IMG_1441.jpg",
+            "color_4_name": "",
+            "noprint_x": 50,
+            "noprint_y": 20,
+            "noprint_w": 0,
+            "noprint_h": 0
+          }
+        },
+        "canvas_washed_hoodie": {
+          "type": "canvas",
+          "settings": {
+            "label": "Washed Hoodie",
+            "product": "custom-washed-hoodie",
+            "color_1_name": "Blue",
+            "photo_1": "shopify://shop_images/IMG_1413_fc522466-4295-47a9-8832-1ddbefa9059b.jpg",
+            "photo_1_back": "shopify://shop_images/IMG_1414.jpg",
+            "color_2_name": "Stone",
+            "photo_2": "shopify://shop_images/IMG_1417.jpg",
+            "photo_2_back": "shopify://shop_images/IMG_1418.jpg",
+            "color_3_name": "Black",
+            "photo_3": "shopify://shop_images/IMG_1415.jpg",
+            "photo_3_back": "shopify://shop_images/IMG_1416.jpg",
+            "color_4_name": "",
+            "noprint_x": 50,
+            "noprint_y": 20,
+            "noprint_w": 0,
+            "noprint_h": 0
+          }
+        },
+        "design_logo_1": {
+          "type": "design",
+          "settings": {
+            "label": "Logo",
+            "image": "shopify://shop_images/IMG_0093.png"
+          }
+        },
+        "design_logo_2": {
+          "type": "design",
+          "settings": {
+            "label": "Logo 2",
+            "image": "shopify://shop_images/IMG_1335.png"
+          }
+        }
+      },
+      "block_order": [
+        "canvas_classic_tee",
+        "canvas_classic_hoodie",
+        "canvas_classic_polo",
+        "canvas_classic_sweater",
+        "canvas_washed_hoodie",
+        "design_logo_1",
+        "design_logo_2"
+      ],
+      "settings": {
+        "heading": "Design studio",
+        "subtext": "Place our designs, make it yours.",
+        "fee_product": ""
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

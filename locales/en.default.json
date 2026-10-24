@@ -1,0 +1,200 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "general": {
+    "search": {
+      "placeholder": "Search",
+      "submit": "Search",
+      "no_results": "No results found for “{{ terms }}”",
+      "results_for": "Search results for “{{ terms }}”",
+      "results_count": {
+        "one": "{{ count }} result",
+        "other": "{{ count }} results"
+      }
+    },
+    "menu": {
+      "open": "Open menu",
+      "close": "Close menu"
+    },
+    "cart": {
+      "title": "Cart",
+      "open": "Open cart",
+      "close": "Close cart",
+      "empty": "Your cart is empty",
+      "empty_link": "Continue shopping",
+      "subtotal": "Subtotal",
+      "checkout": "Check out",
+      "remove": "Remove",
+      "quantity": "Quantity",
+      "note": "Order note",
+      "note_placeholder": "Add a note to your order",
+      "view": "View cart",
+      "update": "Update cart",
+      "updating": "Updating cart…",
+      "error": "Something went wrong. Please try again.",
+      "shipping_note": "Taxes and shipping calculated at checkout",
+      "free_shipping_progress_html": "Spend {{ amount }} more and get <strong>free shipping!</strong>",
+      "free_shipping_unlocked": "You've unlocked free shipping!",
+      "complete_outfit": "Complete your outfit",
+      "add": "Add",
+      "secure_checkout": "Secure checkout · encrypted payment"
+    },
+    "accessibility": {
+      "skip_to_content": "Skip to content",
+      "close": "Close"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to cart",
+      "adding": "Adding…",
+      "added": "Added",
+      "new_in": "New in",
+      "sale": "Sale",
+      "sold_out": "Sold out",
+      "unavailable": "Unavailable",
+      "quantity": "Quantity",
+      "choose_options": "Choose options",
+      "regular_price": "Regular price",
+      "sale_price": "Sale price",
+      "from_price": "From {{ price }}",
+      "description": "Description",
+      "zoom_image": "Zoom image",
+      "next_image": "Next image",
+      "image_number": "Show image {{ number }}",
+      "tax_note": "Taxes and duties included",
+      "newsletter_incentive": "Get it for {{ price }} —",
+      "newsletter_incentive_link": "join our newsletter today!",
+      "low_stock": "Only {{ count }} left in stock",
+      "free_shipping_note": "Free shipping on orders over {{ amount }}",
+      "secure_checkout": "Secure checkout · encrypted payment"
+    }
+  },
+  "collections": {
+    "general": {
+      "no_products": "No products found",
+      "sort_by": "Sort by",
+      "filter_by": "Filter",
+      "view_all": "View All",
+      "view_more": "View More",
+      "clear_all": "Clear all",
+      "items_count": {
+        "one": "{{ count }} product",
+        "other": "{{ count }} products"
+      }
+    },
+    "sorting": {
+      "featured": "Featured",
+      "best_selling": "Best selling",
+      "price_ascending": "Price: low to high",
+      "price_descending": "Price: high to low",
+      "title_ascending": "Alphabetically, A-Z",
+      "title_descending": "Alphabetically, Z-A",
+      "created_descending": "Newest"
+    }
+  },
+  "blogs": {
+    "article": {
+      "read_more": "Read more",
+      "back_to_blog": "Back to {{ blog }}"
+    }
+  },
+  "customer": {
+    "account": {
+      "title": "Account",
+      "log_in": "Log in",
+      "log_out": "Log out"
+    }
+  },
+  "newsletter": {
+    "title": "Sign up for our newsletter",
+    "email_placeholder": "Email",
+    "submit": "Subscribe",
+    "success": "Thanks for subscribing",
+    "popup_heading": "Get {{ percent }}% off your first order",
+    "popup_submit": "Send discount",
+    "popup_consent_intro": "I have read and accept {{ shop }}'s",
+    "popup_terms": "Terms and Conditions",
+    "popup_and": "and understand the information about the use of my personal data as explained in the",
+    "popup_privacy": "Privacy Policy",
+    "popup_fine_print": "*This is only applicable if you have never signed up or used this welcome discount before.",
+    "popup_success_heading": "Thanks for joining!",
+    "popup_success_body": "Your welcome discount is on its way to your inbox."
+  },
+  "404": {
+    "title": "Page not found",
+    "subtext": "The page you were looking for does not exist.",
+    "link": "Continue shopping"
+  },
+  "gift_cards": {
+    "issued": {
+      "title": "Here's your {{ value }} gift card for {{ shop }}!",
+      "subtext": "Your gift card",
+      "gift_card_code": "Gift card code",
+      "disabled": "This gift card has been disabled.",
+      "shop_link": "Continue shopping",
+      "expiration_date": "Expires {{ expires_on }}",
+      "add_to_apple_wallet": "Add to Apple Wallet",
+      "copy_code": "Copy code",
+      "print_gift_card": "Print"
+    }
+  },
+  "sections": {
+    "customizer": {
+      "gesture_hint": "Tap a design to place it. Drag to move, pinch to resize, twist to rotate.",
+      "trust_note": "🔒 Secure checkout · your design is saved with your order",
+      "setup_prompt": "No garments set up yet. In the theme editor, open this page's Design studio section and add a Canvas block with a garment photo.",
+      "empty_title": "The design studio is taking a short break",
+      "empty_link": "Browse the collection",
+      "designs_empty": "No designs available right now.",
+      "designs_empty_merchant": "No designs yet. Add Design blocks to this section in the theme editor.",
+      "steps_label": "Design steps",
+      "step_design": "Design",
+      "step_size": "Size",
+      "step_review": "Review",
+      "step_design_heading": "Place your designs",
+      "step_size_heading": "Pick your size",
+      "step_review_heading": "Review your piece",
+      "step_design_empty": "None yet",
+      "step_design_count": {
+        "one": "{{ count }} placed",
+        "other": "{{ count }} placed"
+      },
+      "continue": "Continue",
+      "download": "Download preview",
+      "expand_controls": "Expand controls",
+      "no_product_note": "To sell this piece, pick its product in this canvas block's theme-editor settings.",
+      "summary_garment": "Garment",
+      "summary_color": "Colour",
+      "summary_size": "Size",
+      "summary_designs": "Designs",
+      "summary_total": "Total"
+    },
+    "zone_picker": {
+      "loading": "Reading your garments…",
+      "garment": "Garment",
+      "colorway": "Colourway",
+      "side": "Side",
+      "front": "Front",
+      "back": "Back",
+      "box_label": "Restricted area. Drag to move, drag a corner to resize, or use arrow keys.",
+      "hint": "Drag the box to move it, drag a corner to resize. Arrow keys nudge by 1%, Shift+arrow by 5%, Alt+arrow resizes.",
+      "readout_title": "Restricted area",
+      "copy": "Copy all four",
+      "clear": "Reset box",
+      "preview": "Preview this zone in the studio →",
+      "transcribe_note": "These values can't be saved from here — Shopify doesn't let a storefront page write theme settings. Copy them into Online Store → Themes → Customize → your Designer page → the matching canvas block → Restricted area. Typing each number is more precise than dragging the slider."
+    },
+    "customizer_promo": {
+      "drag_hint": "Drag a design onto the shirt — double-tap a placed design to remove it",
+      "clear": "Clear"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    {%- render 'meta-tags' -%}
+
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
+    {%- render 'css-variables' -%}
+
+    <script>
+      window.themeStrings = {
+        addToCart: {{ 'products.product.add_to_cart' | t | json }},
+        soldOut: {{ 'products.product.sold_out' | t | json }},
+        cartEmpty: {{ 'general.cart.empty' | t | json }},
+        cartEmptyLink: {{ 'general.cart.empty_link' | t | json }},
+        cartRemove: {{ 'general.cart.remove' | t | json }},
+        genericError: {{ 'general.cart.error' | t | json }},
+        freeShippingProgress: {{ 'general.cart.free_shipping_progress_html' | t: amount: '[amount]' | json }},
+        freeShippingUnlocked: {{ 'general.cart.free_shipping_unlocked' | t | json }},
+        addLabel: {{ 'general.cart.add' | t | json }},
+        adding: {{ 'products.product.adding' | t | json }},
+        added: {{ 'products.product.added' | t | json }},
+        lowStock: {{ 'products.product.low_stock' | t: count: '[count]' | json }}
+      };
+    </script>
+    <script src="{{ 'theme.js' | asset_url }}" type="module"></script>
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="template-{{ request.page_type | handle }}">
+    <a class="skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+    {% section 'header' %}
+
+    <main id="MainContent">
+      {{ content_for_layout }}
+    </main>
+
+    {% section 'footer' %}
+
+    {%- render 'quick-add-modal' -%}
+    {%- render 'cart-drawer' -%}
+    {%- render 'newsletter-modal' -%}
+  </body>
+</html>

@@ -1,0 +1,67 @@
+<div class="page-width section">
+  <h1 class="section__heading" style="margin-bottom: 1.5rem;">{{ 'general.cart.title' | t }}</h1>
+
+  {%- if cart.item_count == 0 -%}
+    <div class="empty-state">
+      <p>{{ 'general.cart.empty' | t }}</p>
+      <a href="{{ routes.all_products_collection_url }}" class="button" style="margin-top: 1rem;">{{ 'general.cart.empty_link' | t }}</a>
+    </div>
+  {%- else -%}
+    <form action="{{ routes.cart_url }}" method="post">
+      <div class="cart-drawer__items" style="padding: 0; margin-bottom: 2rem;">
+        {%- for item in cart.items -%}
+          <div class="cart-item">
+            <a href="{{ item.url }}" class="cart-item__media">
+              {%- if item.image -%}
+                <img src="{{ item.image | image_url: width: 180 }}" alt="{{ item.product_title | escape }}" width="90" height="112" loading="lazy">
+              {%- endif -%}
+            </a>
+            <div class="cart-item__details">
+              <a href="{{ item.url }}" class="cart-item__title">{{ item.product_title }}</a>
+              {%- unless item.variant.title == 'Default Title' -%}
+                <div class="cart-item__variant">{{ item.variant.title }}</div>
+              {%- endunless -%}
+              <quantity-input>
+                <div class="quantity-selector">
+                  <button type="button" data-step="-1" aria-label="Decrease quantity">&minus;</button>
+                  <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" aria-label="{{ 'general.cart.quantity' | t }}">
+                  <button type="button" data-step="1" aria-label="Increase quantity">+</button>
+                </div>
+              </quantity-input>
+            </div>
+            <div class="cart-item__end">
+              <div class="cart-item__price">{{ item.final_line_price | money }}</div>
+              <a href="{{ item.url_to_remove }}" class="cart-item__remove">{{ 'general.cart.remove' | t }}</a>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- if settings.cart_show_note -%}
+        <div class="field" style="margin-bottom: 1.5rem; max-width: 32rem;">
+          <label class="field__label" for="CartNote">{{ 'general.cart.note' | t }}</label>
+          <textarea class="field__input" id="CartNote" name="note" rows="3">{{ cart.note }}</textarea>
+        </div>
+      {%- endif -%}
+
+      <div style="max-width: 24rem; margin-left: auto;">
+        <div class="cart-drawer__subtotal">
+          <span>{{ 'general.cart.subtotal' | t }}</span>
+          <span>{{ cart.total_price | money }}</span>
+        </div>
+        <p class="cart-drawer__note-text">{{ 'general.cart.shipping_note' | t }}</p>
+        <button type="submit" name="update" class="button button--secondary button--full" style="margin-bottom: 0.75rem;">
+          {{ 'general.cart.update' | t }}
+        </button>
+        <button type="submit" name="checkout" class="button button--full">{{ 'general.cart.checkout' | t }}</button>
+      </div>
+    </form>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Cart page",
+  "settings": []
+}
+{% endschema %}

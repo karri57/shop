@@ -1,0 +1,8 @@
+{%- doc -%}
+  Renders an inline SVG icon from assets/icon-*.svg.
+  @param {string} name - icon name without the "icon-" prefix, e.g. "cart"
+  @example
+  {% render 'icon', name: 'cart' %}
+{%- enddoc -%}
+
+{{- 'icon-' | append: name | append: '.svg' | inline_asset_content -}}

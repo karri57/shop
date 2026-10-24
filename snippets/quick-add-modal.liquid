@@ -1,0 +1,9 @@
+<quick-add-modal class="quick-add-modal" id="quick-add-modal" role="dialog" aria-modal="true" aria-label="{{ 'products.product.choose_options' | t }}">
+  <div class="quick-add-modal__backdrop" data-quick-add-close></div>
+  <div class="quick-add-modal__sheet" role="document">
+    <button type="button" class="quick-add-modal__close" data-quick-add-close aria-label="{{ 'general.accessibility.close' | t }}">
+      {% render 'icon', name: 'close' %}
+    </button>
+    <div class="quick-add-modal__content" data-quick-add-content></div>
+  </div>
+</quick-add-modal>

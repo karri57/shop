@@ -1,0 +1,121 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-customizer-picker",
+      "blocks": {
+        "product_MVLbHr": {
+          "type": "product",
+          "settings": {
+            "garment": "tee",
+            "label": "Classic Tee",
+            "color_1_name": "Grey",
+            "image": "shopify://shop_images/IMG_1444.jpg",
+            "color_2_name": "Navy & Pink",
+            "image_2": "shopify://shop_images/IMG_1445.jpg",
+            "color_3_name": "Yellow & Black",
+            "image_3": "shopify://shop_images/IMG_1446_07ca41c6-b940-4b64-9c64-2582579eeeee.jpg",
+            "color_4_name": "Grey & White",
+            "image_4": "shopify://shop_images/IMG_1443.jpg"
+          }
+        },
+        "product_VqEexT": {
+          "type": "product",
+          "settings": {
+            "garment": "hoodie",
+            "label": "Classic Hoodie",
+            "color_1_name": "Heather",
+            "image": "shopify://shop_images/IMG_1334.jpg",
+            "color_2_name": "Grey",
+            "image_2": "shopify://shop_images/IMG_1337.jpg",
+            "color_3_name": "Black",
+            "image_3": "shopify://shop_images/IMG_1333.jpg",
+            "color_4_name": ""
+          }
+        },
+        "product_DdtMGw": {
+          "type": "product",
+          "settings": {
+            "garment": "tee",
+            "label": "Classic Polo",
+            "color_1_name": "White",
+            "image": "shopify://shop_images/IMG_1433.jpg",
+            "color_2_name": "Navy",
+            "image_2": "shopify://shop_images/IMG_1432_54bf3f16-838c-42be-9424-5fe3bc723494.jpg",
+            "color_3_name": "Creme",
+            "image_3": "shopify://shop_images/IMG_1434_3129b89b-d777-499c-90a2-a6b494675f4e.jpg",
+            "color_4_name": "Purple",
+            "image_4": "shopify://shop_images/IMG_1435_a7a750b0-84ce-4550-a8a3-d9c016d8fe50.jpg"
+          }
+        },
+        "product_zAVEbD": {
+          "type": "product",
+          "settings": {
+            "garment": "tee",
+            "label": "Classic Sweater",
+            "color_1_name": "White & Black",
+            "image": "shopify://shop_images/IMG_1439.jpg",
+            "color_2_name": "White & Brown",
+            "image_2": "shopify://shop_images/IMG_1440.jpg",
+            "color_3_name": "Red & Navy",
+            "image_3": "shopify://shop_images/IMG_1441.jpg",
+            "color_4_name": ""
+          }
+        },
+        "product_Mr4TY9": {
+          "type": "product",
+          "settings": {
+            "garment": "hoodie",
+            "label": "Washed Hoodie",
+            "color_1_name": "Blue",
+            "image": "shopify://shop_images/IMG_1413_fc522466-4295-47a9-8832-1ddbefa9059b.jpg",
+            "color_2_name": "Black",
+            "image_2": "shopify://shop_images/IMG_1415.jpg",
+            "color_3_name": "Stone",
+            "image_3": "shopify://shop_images/IMG_1417.jpg",
+            "color_4_name": ""
+          }
+        }
+      },
+      "block_order": [
+        "product_MVLbHr",
+        "product_VqEexT",
+        "product_DdtMGw",
+        "product_zAVEbD",
+        "product_Mr4TY9"
+      ],
+      "settings": {
+        "heading": "Choose your canvas",
+        "subtext": "Pick the piece you want to customize — then make it yours in the design studio.",
+        "tee_row_heading": "Shirts",
+        "hoodie_row_heading": "Hoodies",
+        "card_cta": "Customize this",
+        "designer_url": ""
+      }
+    },
+    "featured_collection_VzT9CH": {
+      "type": "featured-collection",
+      "name": "Featured collection",
+      "settings": {
+        "heading": "New arrivals",
+        "collection": "",
+        "products_to_show": 12,
+        "columns": 4,
+        "show_filters": true,
+        "show_new_badge": true
+      }
+    }
+  },
+  "order": [
+    "main",
+    "featured_collection_VzT9CH"
+  ]
+}

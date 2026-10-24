@@ -1,0 +1,22 @@
+{%- doc -%}
+  Renders a price, with a struck-through compare-at price when on sale.
+  @param {object} product - a product or variant with .price and .compare_at_price
+  @example
+  {% render 'price', product: product %}
+{%- enddoc -%}
+
+{%- liquid
+  assign target = product
+  assign on_sale = false
+  if target.compare_at_price > target.price
+    assign on_sale = true
+  endif
+-%}
+<span data-product-price>
+  {%- if on_sale -%}
+    <span class="price--sale">{{ target.price | money }}</span>
+    <span class="price__compare">{{ target.compare_at_price | money }}</span>
+  {%- else -%}
+    <span>{{ target.price | money }}</span>
+  {%- endif -%}
+</span>

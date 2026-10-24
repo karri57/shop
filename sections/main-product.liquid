@@ -1,0 +1,308 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+
+  assign color_option_index = -1
+  for option in product.options_with_values
+    assign option_name_down = option.name | downcase
+    if option_name_down contains 'color' or option_name_down contains 'colour'
+      assign color_option_index = forloop.index0
+    endif
+  endfor
+
+  if section.settings.show_newsletter_incentive
+    assign discount_multiplier = 100 | minus: settings.newsletter_discount_percent | divided_by: 100.0
+    assign discounted_price = current_variant.price | times: discount_multiplier | round
+    assign discounted_price_formatted = discounted_price | money
+  endif
+
+  assign show_low_stock = false
+  if section.settings.low_stock_threshold > 0 and current_variant.inventory_management == 'shopify' and current_variant.inventory_policy == 'deny' and current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= section.settings.low_stock_threshold
+    assign show_low_stock = true
+  endif
+-%}
+
+<div class="product-page product-page--editorial">
+  <product-gallery class="product__gallery">
+    <div class="product__gallery-main" data-gallery-main>
+      {%- if product.featured_media -%}
+        <img
+          src="{{ product.featured_media.preview_image | image_url: width: 1000 }}"
+          alt="{{ product.featured_media.alt | default: product.title | escape }}"
+          width="1000"
+          height="{{ 1000 | divided_by: product.featured_media.preview_image.aspect_ratio | default: 1200 }}"
+          loading="eager"
+          fetchpriority="high"
+        >
+      {%- endif -%}
+    </div>
+
+    {%- if product.media.size > 1 -%}
+      <div class="product__gallery-dots" role="tablist">
+        {%- for media in product.media -%}
+          <button
+            type="button"
+            class="product__gallery-dot"
+            data-thumbnail
+            data-full-src="{{ media.preview_image | image_url: width: 1000 }}"
+            data-alt="{{ media.alt | escape }}"
+            aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-label="{{ 'products.product.image_number' | t: number: forloop.index }}"
+          ></button>
+        {%- endfor -%}
+      </div>
+
+      <div class="product__thumbnails">
+        {%- for media in product.media -%}
+          <button
+            type="button"
+            class="product__thumbnail"
+            data-thumbnail
+            data-full-src="{{ media.preview_image | image_url: width: 1000 }}"
+            data-alt="{{ media.alt | escape }}"
+            aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+          >
+            <img src="{{ media.preview_image | image_url: width: 180 }}" alt="" width="90" height="110" loading="lazy">
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </product-gallery>
+
+  <div class="product__info">
+    <div class="product__identity">
+      <h1 class="product__title">{{ product.title }}</h1>
+      <div class="product__price-row">
+        <div class="product__price" data-product-price>{%- render 'price', product: current_variant -%}</div>
+      </div>
+      <p class="product__tax-note">{{ 'products.product.tax_note' | t }}</p>
+
+      {%- if section.settings.show_newsletter_incentive and discounted_price < current_variant.price -%}
+        <p class="product__newsletter-incentive" data-newsletter-incentive data-discount-percent="{{ settings.newsletter_discount_percent }}">
+          Get it for <strong data-newsletter-price>{{ discounted_price_formatted }}</strong> &mdash;
+          <button type="button" class="link-underline" data-dialog-open="newsletter-modal">
+            {{ 'products.product.newsletter_incentive_link' | t }}
+          </button>
+        </p>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.low_stock_threshold > 0 -%}
+      <p class="product__stock-badge" data-stock-badge data-threshold="{{ section.settings.low_stock_threshold }}" {% unless show_low_stock %}hidden{% endunless %}>
+        {{ 'products.product.low_stock' | t: count: current_variant.inventory_quantity }}
+      </p>
+    {%- endif -%}
+
+    <product-form>
+      <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{{ current_variant.id }}" ref="variantId">
+        <input type="hidden" name="quantity" value="1">
+
+        {%- if product.has_only_default_variant == false -%}
+          <variant-picker>
+            <script type="application/json" data-variant-json>
+              {{ product.variants | json }}
+            </script>
+
+            {%- for option in product.options_with_values -%}
+              <fieldset class="product__option" data-option-index="{{ forloop.index0 }}">
+                <span class="product__option-name">{{ option.name }}</span>
+
+                {%- if forloop.index0 == color_option_index -%}
+                  <div class="swatch-list swatch-list--image">
+                    {%- for value in option.values -%}
+                      {%- liquid
+                        assign swatch_variant = nil
+                        for v in product.variants
+                          if v.options[color_option_index] == value
+                            assign swatch_variant = v
+                            break
+                          endif
+                        endfor
+                        assign swatch_image = swatch_variant.featured_image | default: product.featured_image
+                      -%}
+                      <label
+                        class="swatch swatch--image"
+                        data-value="{{ value | escape }}"
+                        aria-current="{% if current_variant.options[color_option_index] == value %}true{% else %}false{% endif %}"
+                      >
+                        <input
+                          type="radio"
+                          name="option-{{ color_option_index }}"
+                          value="{{ value | escape }}"
+                          class="visually-hidden"
+                          {% if current_variant.options[color_option_index] == value %}checked{% endif %}
+                        >
+                        {%- if swatch_image -%}
+                          <img src="{{ swatch_image | image_url: width: 120 }}" alt="{{ value | escape }}" width="60" height="72" loading="lazy">
+                        {%- else -%}
+                          {{ value }}
+                        {%- endif -%}
+                      </label>
+                    {%- endfor -%}
+                  </div>
+                {%- else -%}
+                  <div class="swatch-list">
+                    {%- for value in option.values -%}
+                      <label
+                        class="swatch"
+                        data-value="{{ value | escape }}"
+                        aria-current="{% if current_variant.options[forloop.parentloop.index0] == value %}true{% else %}false{% endif %}"
+                      >
+                        <input
+                          type="radio"
+                          name="option-{{ forloop.parentloop.index0 }}"
+                          value="{{ value | escape }}"
+                          class="visually-hidden"
+                          {% if current_variant.options[forloop.parentloop.index0] == value %}checked{% endif %}
+                        >
+                        {{ value }}
+                      </label>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+              </fieldset>
+            {%- endfor -%}
+          </variant-picker>
+        {%- endif -%}
+
+        <span class="form-error" data-form-error role="alert" aria-live="polite" hidden></span>
+
+        <button
+          type="submit"
+          class="button button--full product__add-button"
+          data-add-to-cart-button
+          {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
+        >
+          <span data-add-to-cart-text>
+            {%- if current_variant.available -%}
+              {{ 'products.product.add_to_cart' | t }}
+            {%- else -%}
+              {{ 'products.product.sold_out' | t }}
+            {%- endif -%}
+          </span>
+        </button>
+      </form>
+    </product-form>
+
+    {%- unless current_variant.available -%}
+      <button type="button" class="button button--full product__waitlist-button" data-dialog-open="newsletter-modal">
+        Notify me when this item is back in stock
+      </button>
+    {%- endunless -%}
+
+    {%- if section.settings.fit_note != blank -%}
+      <p class="product__fit-note">{{ section.settings.fit_note }}</p>
+    {%- endif -%}
+
+    <div class="product__accordions">
+      {%- assign product_type_down = product.type | downcase | strip -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'accordion_item' -%}
+          {%- liquid
+            assign show_block = true
+            if block.settings.limit_product_types != blank
+              assign show_block = false
+              assign allowed_types = block.settings.limit_product_types | split: ','
+              for allowed_type in allowed_types
+                assign allowed_type_down = allowed_type | strip | downcase
+                if allowed_type_down == product_type_down
+                  assign show_block = true
+                  break
+                endif
+              endfor
+            endif
+          -%}
+          {%- if show_block -%}
+            <details class="accordion-item" {% if block.settings.open_by_default %}open{% endif %} {{ block.shopify_attributes }}>
+              <summary class="accordion-item__summary">
+                {{ block.settings.title }}
+                <span class="accordion-item__icon">{% render 'icon', name: 'caret' %}</span>
+              </summary>
+              <div class="accordion-item__content rich-text">
+                {%- if block.settings.use_description -%}
+                  {{ product.description }}
+                {%- else -%}
+                  {{ block.settings.content }}
+                {%- endif -%}
+              </div>
+            </details>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<template data-quick-add-template>
+  {%- render 'quick-add-product', product: product -%}
+</template>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.themeRecentlyViewed?.record({
+      id: {{ product.id | json }},
+      title: {{ product.title | json }},
+      url: {{ product.url | json }},
+      image: {{ product.featured_image | image_url: width: 600 | json }},
+      price: {{ current_variant.price | json }},
+      compareAtPrice: {{ current_variant.compare_at_price | json }}
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Product information",
+  "settings": [
+    {
+      "type": "text",
+      "id": "fit_note",
+      "label": "Fit note",
+      "info": "Optional sizing/fit line shown under the add to cart button, e.g. Models are wearing size M."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter_incentive",
+      "label": "Show newsletter discount line",
+      "info": "Discount percent is set in Theme settings → Newsletter.",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "low_stock_threshold",
+      "label": "Low stock warning threshold",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 5,
+      "info": "Shows Only X left in stock when a variant's real inventory drops to or below this number. 0 turns this off."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "accordion_item",
+      "name": "Accordion item",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Details" },
+        { "type": "checkbox", "id": "open_by_default", "label": "Open by default", "default": false },
+        { "type": "checkbox", "id": "use_description", "label": "Use product description", "default": false },
+        { "type": "richtext", "id": "content", "label": "Content", "visible_if": "{{ block.settings.use_description == false }}" },
+        {
+          "type": "text",
+          "id": "limit_product_types",
+          "label": "Limit to product types",
+          "info": "Comma-separated product types. Leave blank to show on every product."
+        }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "accordion_item", "settings": { "title": "Product details", "use_description": true, "open_by_default": true } },
+      { "type": "accordion_item", "settings": { "title": "Size guide" } },
+      { "type": "accordion_item", "settings": { "title": "Shipping" } },
+      { "type": "accordion_item", "settings": { "title": "Garment care" } }
+    ]
+  }
+}
+{% endschema %}

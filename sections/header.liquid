@@ -1,0 +1,120 @@
+<header class="header{% unless section.settings.sticky %} header--static{% endunless %}">
+  {%- if section.settings.announcement != blank -%}
+    <div class="header__announcement">{{ section.settings.announcement }}</div>
+  {%- endif -%}
+
+  <div class="page-width header__row">
+    <div class="header__side header__side--start">
+      <button type="button" class="header__menu-toggle" aria-controls="mobile-menu" aria-expanded="false" aria-label="{{ 'general.menu.open' | t }}">
+        {% render 'icon', name: 'menu' %}
+      </button>
+      <a href="{{ routes.search_url }}" class="header__icon-button header__icon-button--search" aria-label="{{ 'general.search.submit' | t }}">
+        {% render 'icon', name: 'search' %}
+      </a>
+    </div>
+
+    <a href="{{ routes.root_url }}" class="header__logo">
+      {%- if settings.logo != blank -%}
+        <img
+          src="{{ settings.logo | image_url: width: 400 }}"
+          alt="{{ shop.name }}"
+          width="{{ settings.logo_width }}"
+          height="{{ settings.logo_width | divided_by: settings.logo.aspect_ratio | default: 40 }}"
+          style="--logo-width: {{ settings.logo_width }}px;"
+        >
+      {%- else -%}
+        <span class="header__logo-text">{{ shop.name }}</span>
+      {%- endif -%}
+    </a>
+
+    <div class="header__side header__side--end">
+      <a href="{{ routes.account_url }}" class="header__icon-button" aria-label="{{ 'customer.account.title' | t }}">
+        {% render 'icon', name: 'account' %}
+      </a>
+      <a href="{{ routes.cart_url }}" class="header__icon-button" aria-label="{{ 'general.cart.open' | t }}" data-cart-open>
+        {% render 'icon', name: 'cart' %}
+        <span class="header__cart-count" data-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>{{ cart.item_count }}</span>
+      </a>
+    </div>
+  </div>
+
+  {%- if section.settings.show_nav_bar and section.settings.menu.links.size > 0 -%}
+    <nav class="header__nav-bar" aria-label="Categories">
+      {%- for link in section.settings.menu.links -%}
+        <a href="{{ link.url }}" class="header__nav-bar-link"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>
+      {%- endfor -%}
+    </nav>
+  {%- endif -%}
+
+  <mobile-menu id="mobile-menu" class="mobile-menu">
+    <div class="mobile-menu__backdrop" data-close></div>
+    <div class="mobile-menu__panel">
+      <div class="mobile-menu__header">
+        <button type="button" data-close aria-label="{{ 'general.menu.close' | t }}">
+          {% render 'icon', name: 'close-menu' %}
+        </button>
+      </div>
+      <nav class="mobile-menu__list" aria-label="Primary">
+        <a href="{{ routes.all_products_collection_url }}" class="mobile-menu__link mobile-menu__link--arrow">
+          <span>Shop all</span><span aria-hidden="true">&rsaquo;</span>
+        </a>
+        {%- for link in section.settings.menu.links -%}
+          {%- assign link_title_down = link.title | downcase | strip -%}
+          {%- unless link_title_down == 'shop all' -%}
+            {%- if link.links != blank -%}
+              <details class="mobile-menu__group">
+                <summary class="mobile-menu__link mobile-menu__link--arrow">
+                  <span>{{ link.title }}</span><span aria-hidden="true">&rsaquo;</span>
+                </summary>
+                <div class="mobile-menu__submenu">
+                  {%- for child_link in link.links -%}
+                    <a href="{{ child_link.url }}" class="mobile-menu__submenu-link">{{ child_link.title }}</a>
+                  {%- endfor -%}
+                </div>
+              </details>
+            {%- else -%}
+              <a href="{{ link.url }}" class="mobile-menu__link">{{ link.title }}</a>
+            {%- endif -%}
+          {%- endunless -%}
+        {%- endfor -%}
+      </nav>
+      <a href="{{ routes.root_url }}" class="mobile-menu__currency" aria-label="Store currency {{ localization.country.currency.iso_code }}">
+        <span aria-hidden="true">🇺🇸</span>
+        <span>{{ localization.country.currency.iso_code }}</span>
+        <span aria-hidden="true">&rsaquo;</span>
+      </a>
+    </div>
+  </mobile-menu>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "text",
+      "id": "announcement",
+      "label": "Small announcement",
+      "default": "FREE SHIPPING USA ONLY"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky",
+      "label": "Sticky header",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav_bar",
+      "label": "Show category bar under header",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

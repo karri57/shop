@@ -35,11 +35,18 @@ class HomeCustomizer extends HTMLElement {
     this.motif.addEventListener('lostpointercapture', () => this.endDrag(), options);
     this.motif.addEventListener('keydown', (event) => this.handleKey(event), options);
     this.motifImage.addEventListener('load', () => this.render(), options);
+    window.addEventListener('pageshow', () => {
+      window.clearTimeout(this.restoreTimer);
+      this.restoreTimer = window.setTimeout(() => {
+        if (this.isConnected) this.render();
+      }, 0);
+    }, options);
     this.render();
   }
 
   disconnectedCallback() {
     this.events?.abort();
+    window.clearTimeout(this.restoreTimer);
     if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
   }
 

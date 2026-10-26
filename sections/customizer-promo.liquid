@@ -314,6 +314,7 @@
     .home-studio__preview-bottom > p { max-width: 8rem; }
   }
   @media (max-width: 749px) {
+    html:has(home-customizer), body:has(home-customizer) { overflow-x: clip; }
     .home-studio__heading { display: block; margin-bottom: 1.5rem; }
     .home-studio__heading h2 { font-size: clamp(2.5rem, 10.5vw, 4rem); }
     .home-studio__intro { max-width: 28rem; margin-top: 1rem; }

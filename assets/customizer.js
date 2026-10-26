@@ -324,8 +324,10 @@ class KaCustomizer extends HTMLElement {
         .map((d, i) => {
           const badge = this.feesEnabled && d.price > 0 ? `<span class="kc__design-price">+$${d.price}</span>` : '';
           return `
-        <button type="button" class="kc__design" data-kc-design="${i}" title="${d.label}">
-          <img src="${d.src}" alt="${d.label}" loading="lazy" crossorigin="anonymous">
+        <button type="button" class="kc__design" data-kc-design="${i}" aria-label="Add ${d.label}">
+          <span class="kc__design-art"><img src="${d.src}" alt="" loading="lazy" crossorigin="anonymous"></span>
+          <span class="kc__design-label">${d.label}</span>
+          <span class="kc__design-add" aria-hidden="true">+</span>
           ${badge}
         </button>`;
         })
@@ -356,6 +358,9 @@ class KaCustomizer extends HTMLElement {
       const sizeButton = event.target.closest('[data-kc-size]');
       if (sizeButton && !sizeButton.disabled) return this.setSize(Number(sizeButton.dataset.kcSize));
 
+      const colorButton = event.target.closest('[data-kc-colorway]');
+      if (colorButton) return this.setColorway(Number(colorButton.dataset.kcColorway));
+
       const viewButton = event.target.closest('[data-kc-view]');
       if (viewButton) return this.setView(viewButton.dataset.kcView);
 
@@ -364,6 +369,8 @@ class KaCustomizer extends HTMLElement {
 
       const tool = event.target.closest('[data-kc-tool]');
       if (tool) return this.applyTool(tool.dataset.kcTool);
+
+      if (event.target.closest('[data-kc-reset]')) return this.resetDesign();
 
       if (event.target.closest('[data-kc-add]')) return this.addToCart();
       if (event.target.closest('[data-kc-download]')) return this.download();
@@ -495,6 +502,7 @@ class KaCustomizer extends HTMLElement {
     );
     this.updateViewSwitch();
     this.updatePhoto();
+    this.renderColorways();
     this.renderSizes();
     this.renderZone();
     this.renderPlacements();
@@ -503,6 +511,45 @@ class KaCustomizer extends HTMLElement {
 
   get currentColorway() {
     return this.currentCanvas.colorways[this.state.colorwayIndex] || this.currentCanvas.colorways[0];
+  }
+
+  renderColorways() {
+    const group = this.querySelector('[data-kc-color-group]');
+    const holder = this.querySelector('[data-kc-colorways]');
+    const value = this.querySelector('[data-kc-color-value]');
+    if (!group || !holder) return;
+
+    const colorways = this.currentCanvas.colorways;
+    group.hidden = colorways.length < 2;
+    if (value) value.textContent = this.currentColorway?.name || '';
+    if (colorways.length < 2) {
+      holder.innerHTML = '';
+      return;
+    }
+
+    holder.innerHTML = colorways
+      .map(
+        (colorway, index) => `
+          <button type="button" class="kc__colorway" data-kc-colorway="${index}" aria-current="${index === this.state.colorwayIndex}">
+            <span class="kc__colorway-thumb"><img src="${colorway.front}" alt="" loading="lazy"></span>
+            <span>${colorway.name}</span>
+          </button>`
+      )
+      .join('');
+  }
+
+  setColorway(index) {
+    if (!this.currentCanvas.colorways[index]) return;
+    this.state.colorwayIndex = index;
+    this.state.colorwayByCanvas[this.currentCanvas.key] = index;
+    if (!this.currentColorway.back && this.state.view === 'back') this.state.view = 'front';
+    this.state.selected = null;
+    this.hideTools();
+    this.renderColorways();
+    this.updateViewSwitch();
+    this.updatePhoto();
+    this.renderPlacements();
+    this.updateCommerce();
   }
 
   // Flipping to the back only means anything when the colourway actually on
@@ -561,7 +608,6 @@ class KaCustomizer extends HTMLElement {
     this.state.sizeIndex = index;
     this.renderSizes();
     this.updateCommerce();
-    this.advanceFrom('size');
   }
 
   updatePhoto() {
@@ -590,6 +636,8 @@ class KaCustomizer extends HTMLElement {
       </button>`
       )
       .join('');
+    const value = this.querySelector('[data-kc-size-value]');
+    if (value) value.textContent = variants[this.state.sizeIndex]?.title || '';
   }
 
   setView(view) {
@@ -643,7 +691,24 @@ class KaCustomizer extends HTMLElement {
     if (note) note.hidden = Boolean(variant);
     const priceEl = this.querySelector('[data-kc-price]');
     const base = this.basePriceCents();
-    if (priceEl && base != null) priceEl.textContent = money(base + this.feeDollars() * 100);
+    const total = base == null ? null : base + this.feeDollars() * 100;
+    if (priceEl && total != null) priceEl.textContent = money(total);
+    this.querySelectorAll('[data-kc-product-name], [data-kc-panel-product]').forEach((el) => {
+      el.textContent = this.currentCanvas.label;
+    });
+    const productPrice = this.querySelector('[data-kc-product-price]');
+    if (productPrice && total != null) productPrice.textContent = money(total);
+    const count = this.designCount();
+    const selectedCount = this.querySelector('[data-kc-selected-count]');
+    if (selectedCount) selectedCount.textContent = count ? `${count} ${count === 1 ? 'motif' : 'motifs'} placed` : 'No motif selected';
+    const reset = this.querySelector('[data-kc-reset]');
+    if (reset) reset.hidden = count === 0;
+    const hasColor = this.currentCanvas.colorways.length > 1;
+    const hasSize = this.steps.includes('size');
+    const sizeNumber = this.querySelector('[data-kc-size-number]');
+    const reviewNumber = this.querySelector('[data-kc-review-number]');
+    if (sizeNumber) sizeNumber.textContent = hasColor ? '03' : '02';
+    if (reviewNumber) reviewNumber.textContent = String(2 + Number(hasColor) + Number(hasSize)).padStart(2, '0');
     this.updateSteps();
   }
 
@@ -656,10 +721,24 @@ class KaCustomizer extends HTMLElement {
     if (zone) [x, y] = this.clampOutsideZone(x, y, zone);
     this.currentPlacements.push({ design: designIndex, x, y, scale: 1, rot: 0 });
     this.select(this.currentPlacements.length - 1);
+    const status = this.querySelector('[data-kc-status]');
+    if (status) status.textContent = `${this.config.designs[designIndex]?.label || 'Motif'} added. Drag it on the garment to position it.`;
     this.updateCommerce();
     // Deliberately no auto-advance: design is the open-ended step, and
     // moving the panel away mid-composition would fight the shopper. The
     // "Continue" button appears instead.
+  }
+
+  resetDesign() {
+    const canvas = this.currentCanvas;
+    this.state.placements[`${canvas.key}-front`] = [];
+    this.state.placements[`${canvas.key}-back`] = [];
+    this.state.selected = null;
+    this.hideTools();
+    this.renderPlacements();
+    this.updateCommerce();
+    const status = this.querySelector('[data-kc-status]');
+    if (status) status.textContent = 'Design cleared.';
   }
 
   // `hidden` is overridden in CSS so the pill can fade rather than vanish,

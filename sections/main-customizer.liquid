@@ -150,6 +150,8 @@
     </script>
 
     <div class="kc__header">
+      <a class="kc__back" href="/pages/create-your-own">{{ 'sections.customizer.change_garment' | t }}</a>
+      <p class="kc__eyebrow">{{ 'sections.customizer.eyebrow' | t }}</p>
       <h1 class="kc__title">{{ section.settings.heading }}</h1>
       {%- if section.settings.subtext != blank -%}
         <p class="kc__subtext">{{ section.settings.subtext }}</p>
@@ -158,21 +160,14 @@
 
     <div class="kc__layout">
       <div class="kc__stage-column">
-        <div class="kc__canvas-tabs" role="tablist" aria-label="Garment">
-          {%- assign first_canvas_tab = true -%}
-          {%- for block in section.blocks -%}
-            {%- if block.type == 'canvas' and block.settings.product != blank or block.type == 'canvas' and block.settings.photo_1 != blank -%}
-              <button
-                type="button"
-                data-kc-canvas="{{ block.settings.label | handleize }}"
-                aria-current="{% if first_canvas_tab %}true{% else %}false{% endif %}"
-                {{ block.shopify_attributes }}
-              >
-                {{ block.settings.label }}
-              </button>
-              {%- assign first_canvas_tab = false -%}
-            {%- endif -%}
-          {%- endfor -%}
+        <div class="kc__stage-meta">
+          <div>
+            <span>{{ 'sections.customizer.designing' | t }}</span>
+            <strong data-kc-product-name></strong>
+          </div>
+          <button type="button" class="kc__reset" data-kc-reset hidden>
+            {{ 'sections.customizer.reset' | t }}
+          </button>
         </div>
 
         <div class="kc__stage" data-kc-stage>
@@ -230,52 +225,23 @@
       </div>
 
       <div class="kc__panel" data-kc-panel>
-        {%- comment -%}
-          The grip is outside .kc__stage on purpose: the stage owns
-          pinch/rotate via its own pointer handlers, and keeping the two
-          gesture surfaces in disjoint subtrees is what stops them
-          fighting.
-        {%- endcomment -%}
-        <div class="kc__sheet-grip" data-kc-sheet-handle>
-          <span class="kc__sheet-bar" aria-hidden="true"></span>
-          <button
-            type="button"
-            class="kc__sheet-toggle"
-            data-kc-sheet-toggle
-            aria-expanded="false"
-            aria-controls="kc-panel-body"
-          >
-            <span class="visually-hidden">{{ 'sections.customizer.expand_controls' | t }}</span>
-          </button>
+        <div class="kc__product-summary">
+          <div>
+            <span class="kc__panel-label">{{ 'sections.customizer.your_piece' | t }}</span>
+            <strong data-kc-panel-product></strong>
+          </div>
+          <span class="kc__product-price" data-kc-product-price></span>
         </div>
 
-        <nav class="kc__steps-nav" data-kc-steps-nav aria-label="{{ 'sections.customizer.steps_label' | t }}">
-          <button type="button" class="kc__step-tab" data-kc-step="design" data-state="active" aria-current="true">
-            <span class="kc__step-mark" aria-hidden="true">1</span>
-            <span class="kc__step-text">
-              <span class="kc__step-name">{{ 'sections.customizer.step_design' | t }}</span>
-              <span class="kc__step-value" data-kc-step-value></span>
-            </span>
-          </button>
-          <button type="button" class="kc__step-tab" data-kc-step="size" data-state="todo" aria-current="false">
-            <span class="kc__step-mark" aria-hidden="true">2</span>
-            <span class="kc__step-text">
-              <span class="kc__step-name">{{ 'sections.customizer.step_size' | t }}</span>
-              <span class="kc__step-value" data-kc-step-value></span>
-            </span>
-          </button>
-          <button type="button" class="kc__step-tab" data-kc-step="review" data-state="todo" aria-current="false">
-            <span class="kc__step-mark" aria-hidden="true">3</span>
-            <span class="kc__step-text">
-              <span class="kc__step-name">{{ 'sections.customizer.step_review' | t }}</span>
-              <span class="kc__step-value" data-kc-step-value></span>
-            </span>
-          </button>
-        </nav>
-
-        <div class="kc__panel-body" id="kc-panel-body">
-          <section class="kc__step" data-kc-step-panel="design" data-state="active">
-            <h2 class="kc__step-heading" tabindex="-1" data-kc-step-focus>{{ 'sections.customizer.step_design_heading' | t }}</h2>
+        <div class="kc__options">
+          <section class="kc__option">
+            <div class="kc__option-heading">
+              <span class="kc__option-number">01</span>
+              <div>
+                <h2>{{ 'sections.customizer.choose_motif' | t }}</h2>
+                <p data-kc-selected-count>{{ 'sections.customizer.no_motif' | t }}</p>
+              </div>
+            </div>
             <div class="kc__designs" data-kc-designs>
               <p class="kc__empty" data-kc-designs-empty>
                 {%- if request.design_mode -%}
@@ -286,24 +252,39 @@
               </p>
             </div>
             <p class="kc__hint">{{ 'sections.customizer.gesture_hint' | t }}</p>
-            <button type="button" class="button button--secondary kc__step-next" data-kc-step-next hidden>
-              {{ 'sections.customizer.continue' | t }}
-            </button>
           </section>
 
-          <section class="kc__step" data-kc-step-panel="size" data-state="todo" hidden>
-            <h2 class="kc__step-heading" tabindex="-1" data-kc-step-focus>{{ 'sections.customizer.step_size_heading' | t }}</h2>
-            <div data-kc-size-group hidden>
-              <div class="kc__sizes" data-kc-sizes></div>
+          <section class="kc__option" data-kc-color-group hidden>
+            <div class="kc__option-heading">
+              <span class="kc__option-number">02</span>
+              <div>
+                <h2>{{ 'sections.customizer.choose_color' | t }}</h2>
+                <p data-kc-color-value></p>
+              </div>
             </div>
+            <div class="kc__colorways" data-kc-colorways></div>
           </section>
 
-          <section class="kc__step" data-kc-step-panel="review" data-state="todo" hidden>
-            <h2 class="kc__step-heading" tabindex="-1" data-kc-step-focus>{{ 'sections.customizer.step_review_heading' | t }}</h2>
+          <section class="kc__option" data-kc-size-group hidden>
+            <div class="kc__option-heading">
+              <span class="kc__option-number" data-kc-size-number>02</span>
+              <div>
+                <h2>{{ 'sections.customizer.step_size_heading' | t }}</h2>
+                <p data-kc-size-value></p>
+              </div>
+            </div>
+              <div class="kc__sizes" data-kc-sizes></div>
+          </section>
+
+          <section class="kc__option kc__review">
+            <div class="kc__option-heading">
+              <span class="kc__option-number" data-kc-review-number>03</span>
+              <div>
+                <h2>{{ 'sections.customizer.step_review_heading' | t }}</h2>
+                <p>{{ 'sections.customizer.review_hint' | t }}</p>
+              </div>
+            </div>
             <dl class="kc__summary" data-kc-summary></dl>
-            <button type="button" class="button button--secondary button--full" data-kc-download>
-              {{ 'sections.customizer.download' | t }}
-            </button>
           </section>
         </div>
 
@@ -316,6 +297,7 @@
             {{ 'sections.customizer.no_product_note' | t }}
           </p>
           <p class="form-error" data-kc-error role="alert" aria-live="polite" hidden></p>
+          <p class="visually-hidden" data-kc-status role="status" aria-live="polite"></p>
           <p class="kc__trust">{{ 'sections.customizer.trust_note' | t }}</p>
         </div>
       </div>
@@ -346,8 +328,8 @@
 {
   "name": "Design studio",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Design studio" },
-    { "type": "textarea", "id": "subtext", "label": "Subtext", "default": "Pick a garment, place our designs, make it yours." },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Make it yours" },
+    { "type": "textarea", "id": "subtext", "label": "Subtext", "default": "Choose a signature motif, place it your way, and create a piece that is only yours." },
     {
       "type": "header",
       "content": "Design pricing"

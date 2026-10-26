@@ -41,6 +41,7 @@
           {%- for block in section.blocks -%}
             {%- if block.type == 'design' and block.settings.image != blank -%}
               {
+                "key": {{ block.settings.label | handleize | json }},
                 "label": {{ block.settings.label | default: 'Design' | json }},
                 "src": {{ block.settings.image | image_url: width: 500 | json }},
                 "price": {{ block.settings.price | default: 0 | json }}
@@ -49,11 +50,13 @@
           {%- endfor -%}
           {%- unless has_designs -%}
             {
+              "key": "cross",
               "label": "Cross",
               "src": {{ 'custom-design-cross.svg' | asset_url | json }},
               "price": 0
             },
             {
+              "key": "faith-over-fear",
               "label": "Faith over fear",
               "src": {{ 'custom-design-faith.svg' | asset_url | json }},
               "price": 0
@@ -296,6 +299,7 @@
           <p class="kc__note" data-kc-note hidden>
             {{ 'sections.customizer.no_product_note' | t }}
           </p>
+          <p class="kc__note" data-kc-stock-note hidden>{{ 'sections.customizer.sold_out_note' | t }}</p>
           <p class="form-error" data-kc-error role="alert" aria-live="polite" hidden></p>
           <p class="visually-hidden" data-kc-status role="status" aria-live="polite"></p>
           <p class="kc__trust">{{ 'sections.customizer.trust_note' | t }}</p>
@@ -323,6 +327,10 @@
 </ka-customizer>
 
 <script src="{{ 'customizer.js' | asset_url }}" type="module"></script>
+
+{% stylesheet %}
+  .kc [hidden] { display: none !important; }
+{% endstylesheet %}
 
 {% schema %}
 {

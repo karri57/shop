@@ -47,6 +47,31 @@
     "customizer-studio": {
       "type": "customizer-promo",
       "blocks": {
+        "canvas-washed": {
+          "type": "canvas",
+          "settings": {
+            "label": "Washed Hoodie",
+            "canvas_key": "washed-hoodie",
+            "product": "custom-washed-hoodie",
+            "colorway": "Stone"
+          }
+        },
+        "canvas-polo": {
+          "type": "canvas",
+          "settings": {
+            "label": "Classic Polo",
+            "canvas_key": "classic-polo",
+            "product": "custom-classic-polo"
+          }
+        },
+        "canvas-tee": {
+          "type": "canvas",
+          "settings": {
+            "label": "Classic Tee",
+            "canvas_key": "classic-tee",
+            "product": "custom-classic-tee"
+          }
+        },
         "brand-mark": {
           "type": "design",
           "settings": {
@@ -55,25 +80,20 @@
         }
       },
       "block_order": [
+        "canvas-washed",
+        "canvas-polo",
+        "canvas-tee",
         "brand-mark"
       ],
       "settings": {
-        "color_scheme": "dark",
-        "eyebrow": "KA Design Studio",
-        "heading_solid": "Make it",
-        "heading_outline": "your own",
-        "text": "Choose the piece. Place the artwork. Finish with a one-of-one design made by you.",
-        "step_1": "Choose your piece",
-        "step_2": "Build your design",
-        "step_3": "Wear the only one",
-        "button_label": "Create yours",
+        "eyebrow": "The KA Custom Studio",
+        "heading_solid": "Made by us.",
+        "heading_outline": "Made yours",
+        "text": "Your piece. Your perspective. Start with a silhouette, choose your artwork, and make it personal.",
+        "button_label": "Continue in studio",
         "link": "shopify://pages/create-your-own",
-        "trust_note": "No design experience needed · Secure checkout",
-        "shirt_image": "shopify://shop_images/c200b860beda4b769b54a13a30aa77ed.png",
-        "zone_x": 50,
-        "zone_y": 42,
-        "zone_w": 32,
-        "zone_h": 28
+        "trust_note": "Signature artwork. A personal point of view.",
+        "shirt_image": "shopify://shop_images/c200b860beda4b769b54a13a30aa77ed.png"
       }
     },
     "best-sellers-banner": {

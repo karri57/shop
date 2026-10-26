@@ -111,8 +111,33 @@ class KaCustomizer extends HTMLElement {
 
     this.renderDesignTray();
     this.setCanvas(this.state.canvasIndex);
+    this.importHomepageDesign(params);
     this.bindEvents();
     this.bindSheet();
+  }
+
+  importHomepageDesign(params) {
+    const motif = params.get('motif');
+    if (!motif || motif === 'none' || params.get('canvas') !== this.currentCanvas.key) return;
+    const index = this.config.designs.findIndex((design) => (design.key || this.handleize(design.label)) === motif);
+    if (index < 0) return;
+    const number = (key, fallback, min, max) => {
+      const raw = params.get(key);
+      const value = raw === null || raw.trim() === '' ? fallback : Number(raw);
+      return Number.isFinite(value) ? Math.max(min, Math.min(max, value)) : fallback;
+    };
+    let x = number('x', 50, 5, 95);
+    let y = number('y', 42, 5, 95);
+    if (this.activeZone) [x, y] = this.clampOutsideZone(x, y, this.activeZone);
+    this.currentPlacements.push({
+      design: index,
+      x,
+      y,
+      scale: number('scale', 0.9, 0.3, 2.4),
+      rot: 0,
+    });
+    this.select(this.currentPlacements.length - 1);
+    this.updateCommerce();
   }
 
   /* -- steps ------------------------------------------------------------- */
@@ -689,6 +714,8 @@ class KaCustomizer extends HTMLElement {
       addButton.disabled = Boolean(variant) && Boolean(chosen) && !chosen.available;
     }
     if (note) note.hidden = Boolean(variant);
+    const stockNote = this.querySelector('[data-kc-stock-note]');
+    if (stockNote) stockNote.hidden = !variant || !chosen || chosen.available;
     const priceEl = this.querySelector('[data-kc-price]');
     const base = this.basePriceCents();
     const total = base == null ? null : base + this.feeDollars() * 100;

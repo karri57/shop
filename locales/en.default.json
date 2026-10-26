@@ -147,6 +147,29 @@
     }
   },
   "sections": {
+    "home_studio": {
+      "cross": "Cross",
+      "faith": "Faith over fear",
+      "live_preview": "Live preview",
+      "reset": "Reset",
+      "front_view": "Front view",
+      "preview_hint": "Drag the artwork to find your placement.",
+      "move_motif": "Move artwork. Drag or use arrow keys; hold Shift for larger steps.",
+      "start_here": "A little more you.",
+      "your_design": "Your design starts here",
+      "choose_piece": "Choose your piece",
+      "choose_motif": "Choose your artwork",
+      "make_yours": "Make it personal",
+      "no_motif": "No artwork",
+      "center": "Center",
+      "left_chest": "Left chest",
+      "motif_size": "Artwork size",
+      "garment_price": "Garment price",
+      "available": "Available to customize",
+      "sold_out": "Sold out · design preview available",
+      "handoff_note": "Your design carries over. Choose your size in the studio.",
+      "explore": "Explore all pieces"
+    },
     "customizer": {
       "gesture_hint": "Choose a motif, then drag it into place. Select it again to resize, rotate, or remove.",
       "trust_note": "Secure checkout · your design is saved with your order",
@@ -159,6 +182,7 @@
       "no_motif": "No motif selected",
       "choose_color": "Choose a color",
       "review_hint": "Made by you, finished by KA.",
+      "sold_out_note": "This garment is currently sold out. You can still explore your design or choose another garment.",
       "setup_prompt": "No garments set up yet. In the theme editor, open this page's Design studio section and add a Canvas block with a garment photo.",
       "empty_title": "The design studio is taking a short break",
       "empty_link": "Browse the collection",

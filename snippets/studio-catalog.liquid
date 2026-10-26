@@ -1,0 +1,40 @@
+{%- liquid
+  assign handles = 'vintage-washed-frayed-hem-hoodie,vintage-washed-frayed-hem-hoodie-1,vintage-washed-frayed-hem-hoodie-2,vintage-washed-frayed-hem-hoodie-3,vintage-washed-frayed-hem-hoodie-4,vintage-washed-frayed-hem-hoodie-5,vintage-washed-frayed-hem-hoodie-6,vintage-washed-frayed-hem-hoodie-7,vintage-washed-frayed-hem-hoodie-8,vintage-washed-frayed-hem-hoodie-9,oversize-fleeced-hoodie,essential-cotton-t-shirt,two-tone-fleeced-varsity-jacket,women-s-mineral-wash-cotton-crop-t-shirt' | split: ','
+-%}
+[
+{%- for handle in handles -%}
+  {%- assign garment = all_products[handle] -%}
+  {%- if garment != blank -%}
+    {
+      "key": {{ garment.handle | json }},
+      "label": {{ garment.title | json }},
+      "group": {% if handle contains 'vintage-washed-frayed-hem-hoodie' %}"vintage-washed-frayed-hem-hoodie"{% else %}{{ garment.handle | json }}{% endif %},
+      "variant": {{ garment.selected_or_first_available_variant.id | json }},
+      "price": {{ garment.price | json }},
+      "variants": [
+        {%- paginate garment.variants by 250 -%}
+        {%- for variant in garment.variants -%}
+          {
+            "id": {{ variant.id | json }},
+            "title": {{ variant.option2 | json }},
+            "color": {{ variant.option1 | json }},
+            "style": {{ variant.option3 | default: '' | json }},
+            "front": {{ variant.featured_image | default: garment.featured_image | image_url: width: 1200 | json }},
+            "available": {{ variant.available | json }},
+            "price": {{ variant.price | json }}
+          },
+        {%- endfor -%}
+        {%- endpaginate -%}
+        null
+      ],
+      "photos": [
+        {%- for image in garment.images -%}
+          {{ image | image_url: width: 1200 | json }},
+        {%- endfor -%}
+        null
+      ]
+    },
+  {%- endif -%}
+{%- endfor -%}
+null
+]

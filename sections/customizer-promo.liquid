@@ -1,345 +1,116 @@
 {%- liquid
-  assign canvases = section.blocks | where: 'type', 'canvas'
-  assign first_canvas = canvases | first
-  assign first_key = first_canvas.settings.canvas_key | default: 'washed-hoodie'
-  assign first_label = first_canvas.settings.label | default: 'Washed Hoodie'
-  assign first_photo = first_canvas.settings.photo
-  if first_photo == blank and first_key == 'washed-hoodie'
-    assign first_photo = section.settings.shirt_image
-  endif
-  assign first_asset = 'custom-hoodie.svg'
-  if first_key contains 'tee'
-    assign first_asset = 'custom-tee.svg'
-  elsif first_key contains 'polo'
-    assign first_asset = 'custom-polo.svg'
-  elsif first_key contains 'sweater'
-    assign first_asset = 'custom-sweater.svg'
-  endif
-  assign first_src = first_asset | asset_url
-  assign first_ratio = 0.789474
-  if first_photo != blank
-    assign first_src = first_photo | image_url: width: 900
-    assign first_ratio = first_photo.aspect_ratio
-  endif
-  assign first_motif_label = 'sections.home_studio.cross' | t
-  assign first_motif_key = 'cross'
-  assign first_motif_src = 'custom-design-cross.svg' | asset_url
-  assign has_designs = false
-  for block in section.blocks
-    if block.type == 'design' and block.settings.image != blank
-      unless has_designs
-        assign first_motif_label = block.settings.label
-        assign first_motif_key = block.settings.label | handleize
-        assign first_motif_src = block.settings.image | image_url: width: 500
-      endunless
-      assign has_designs = true
-    endif
-  endfor
   assign studio_url = section.settings.studio_link | default: '/pages/design-studio'
-  assign image_loading = 'lazy'
-  if section.index == 1
-    assign image_loading = 'eager'
-  endif
+  assign hoodie = all_products['vintage-washed-frayed-hem-hoodie-8']
+  assign tee = all_products['essential-cotton-t-shirt']
+  assign varsity = all_products['two-tone-fleeced-varsity-jacket']
 -%}
-
-<home-customizer class="home-studio" aria-labelledby="HomeStudioTitle-{{ section.id }}">
-  <script type="application/json" data-hc-config>
-    {
-      "studioUrl": {{ studio_url | json }},
-      "canvases": [
-        {%- for block in canvases -%}
-          {%- liquid
-            assign canvas_settings = block.settings
-            assign photo = canvas_settings.photo
-            if photo == blank and canvas_settings.canvas_key == 'washed-hoodie'
-              assign photo = section.settings.shirt_image
-            endif
-            assign asset = 'custom-hoodie.svg'
-            if canvas_settings.canvas_key contains 'tee'
-              assign asset = 'custom-tee.svg'
-            elsif canvas_settings.canvas_key contains 'polo'
-              assign asset = 'custom-polo.svg'
-            elsif canvas_settings.canvas_key contains 'sweater'
-              assign asset = 'custom-sweater.svg'
-            endif
-            assign photo_src = asset | asset_url
-            assign photo_ratio = 0.789474
-            if photo != blank
-              assign photo_src = photo | image_url: width: 900
-              assign photo_ratio = photo.aspect_ratio
-            endif
-          -%}
-          {
-            "key": {{ canvas_settings.canvas_key | json }},
-            "label": {{ canvas_settings.label | json }},
-            "src": {{ photo_src | json }},
-            "ratio": {{ photo_ratio | json }},
-            "colorway": {{ canvas_settings.colorway | handleize | json }},
-            "price": {{ canvas_settings.product.price | money | strip_html | json }},
-            "available": {{ canvas_settings.product.available | default: false | json }}
-          },
-        {%- else -%}
-          {
-            "key": {{ first_key | json }},
-            "label": {{ first_label | json }},
-            "src": {{ first_src | json }},
-            "ratio": {{ first_ratio | json }},
-            "colorway": "",
-            "price": "",
-            "available": false
-          },
-        {%- endfor -%}
-        null
-      ],
-      "designs": [
-        {%- for block in section.blocks -%}
-          {%- if block.type == 'design' and block.settings.image != blank -%}
-            {
-              "key": {{ block.settings.label | handleize | json }},
-              "label": {{ block.settings.label | json }},
-              "src": {{ block.settings.image | image_url: width: 500 | json }}
-            },
-          {%- endif -%}
-        {%- endfor -%}
-        {%- unless has_designs -%}
-          { "key": "cross", "label": {{ 'sections.home_studio.cross' | t | json }}, "src": {{ 'custom-design-cross.svg' | asset_url | json }} },
-          { "key": "faith-over-fear", "label": {{ 'sections.home_studio.faith' | t | json }}, "src": {{ 'custom-design-faith.svg' | asset_url | json }} },
-        {%- endunless -%}
-        null
-      ],
-      "strings": {
-        "available": {{ 'sections.home_studio.available' | t | json }},
-        "soldOut": {{ 'sections.home_studio.sold_out' | t | json }},
-        "noMotif": {{ 'sections.home_studio.no_motif' | t | json }},
-        "moveMotif": {{ 'sections.home_studio.move_motif' | t | json }}
-      }
-    }
-  </script>
-
+<section class="studio-editorial" aria-labelledby="HomeStudioTitle-{{ section.id }}">
   <div class="page-width">
-    <div class="home-studio__heading">
+    <div class="studio-editorial__heading">
       <div>
-        <p class="home-studio__eyebrow">{{ section.settings.eyebrow | escape }}</p>
-        <h2 id="HomeStudioTitle-{{ section.id }}">{{ section.settings.heading_solid | escape }} <span>{{ section.settings.heading_outline | escape }}</span><span class="home-studio__period">.</span></h2>
+        <p class="studio-editorial__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        <h2 id="HomeStudioTitle-{{ section.id }}">{{ section.settings.heading_solid | escape }} <em>{{ section.settings.heading_outline | escape }}.</em></h2>
       </div>
-      <p class="home-studio__intro">{{ section.settings.text | escape }}</p>
+      <p>{{ 'sections.studio_showcase.intro' | t }}</p>
     </div>
-
-    <div class="home-studio__workbench">
-      <div class="home-studio__preview">
-        <div class="home-studio__preview-top">
-          <span class="home-studio__live"><span aria-hidden="true"></span>{{ 'sections.home_studio.live_preview' | t }}</span>
-          <button type="button" class="home-studio__reset" data-hc-reset data-hc-control disabled>{{ 'sections.home_studio.reset' | t }} <span aria-hidden="true">↺</span></button>
-        </div>
-
-        <div class="home-studio__stage">
-          <div class="home-studio__frame" style="--hc-ratio: {{ first_ratio }}" data-hc-frame>
-            {%- if first_photo != blank -%}
-              {{ first_photo | image_url: width: 900 | image_tag: class: 'home-studio__garment', alt: first_label, widths: '300, 450, 600, 900', sizes: '(min-width: 990px) 430px, (min-width: 750px) 370px, 300px', loading: image_loading, draggable: 'false', data-hc-photo: '' }}
-            {%- else -%}
-              <img class="home-studio__garment" src="{{ first_src }}" alt="{{ first_label | escape }}" width="600" height="760" loading="{{ image_loading }}" draggable="false" data-hc-photo>
-            {%- endif -%}
-            <button type="button" class="home-studio__motif" style="left: 50%; top: 42%; width: 21.6%" aria-label="{{ 'sections.home_studio.move_motif' | t | escape }}" data-hc-motif data-hc-control disabled>
-              <img src="{{ first_motif_src }}" alt="{{ first_motif_label | escape }}" width="300" height="300" loading="{{ image_loading }}" draggable="false" data-hc-motif-image>
-            </button>
-          </div>
-        </div>
-
-        <div class="home-studio__preview-bottom">
-          <div><strong data-hc-product-name>{{ first_label | escape }}</strong><span>{{ 'sections.home_studio.front_view' | t }}</span></div>
-          <p>{{ 'sections.home_studio.preview_hint' | t }}</p>
-        </div>
-      </div>
-
-      <div class="home-studio__controls">
-        <div class="home-studio__controls-heading">
-          <p>{{ 'sections.home_studio.start_here' | t }}</p>
-          <span>{{ 'sections.home_studio.your_design' | t }}</span>
-        </div>
-
-        <fieldset class="home-studio__option">
-          <legend><span>01</span>{{ 'sections.home_studio.choose_piece' | t }}</legend>
-          <div class="home-studio__pieces">
-            {%- for block in canvases -%}
-              <button type="button" class="home-studio__piece" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" data-hc-canvas="{{ forloop.index0 }}" data-hc-control disabled {{ block.shopify_attributes }}>{{ block.settings.label | escape }}</button>
-            {%- else -%}
-              <button type="button" class="home-studio__piece" aria-pressed="true" data-hc-canvas="0" data-hc-control disabled>{{ first_label | escape }}</button>
-            {%- endfor -%}
-          </div>
-        </fieldset>
-
-        <fieldset class="home-studio__option">
-          <legend><span>02</span>{{ 'sections.home_studio.choose_motif' | t }}</legend>
-          <div class="home-studio__designs">
-            {%- assign design_index = 0 -%}
-            {%- for block in section.blocks -%}
-              {%- if block.type == 'design' and block.settings.image != blank -%}
-                <button type="button" class="home-studio__design" aria-pressed="{% if design_index == 0 %}true{% else %}false{% endif %}" data-hc-design="{{ design_index }}" data-hc-control disabled {{ block.shopify_attributes }}>
-                  {{ block.settings.image | image_url: width: 180 | image_tag: alt: '', width: 90, height: 90, loading: 'lazy' }}
-                  <span>{{ block.settings.label | escape }}</span>
-                  <span class="home-studio__check" aria-hidden="true">✓</span>
-                </button>
-                {%- assign design_index = design_index | plus: 1 -%}
+    <div class="studio-editorial__grid">
+      {%- assign looks = 'signature-logo,ka-monogram,create-your-legacy' | split: ',' -%}
+      {%- for look in looks -%}
+        {%- liquid
+          assign garment = hoodie
+          assign colorway = 'brown'
+          assign artwork_label = 'sections.studio_showcase.signature' | t
+          if forloop.index == 2
+            assign garment = varsity
+            assign colorway = 'black-with-white'
+            assign artwork_label = 'sections.studio_showcase.initials' | t
+          elsif forloop.index == 3
+            assign garment = tee
+            assign colorway = 'navy-blue'
+            assign artwork_label = 'sections.studio_showcase.words' | t
+          endif
+          assign canvas_key = garment.handle
+          if forloop.first
+            assign canvas_key = 'vintage-washed-frayed-hem-hoodie'
+          endif
+          assign garment_photo = garment.featured_image
+          if forloop.first and section.settings.shirt_image != blank
+            assign garment_photo = section.settings.shirt_image
+          endif
+        -%}
+        <a class="studio-editorial__look studio-editorial__look--{{ forloop.index }}" href="{{ studio_url }}?canvas={{ canvas_key }}&colorway={{ colorway }}&motif={{ look }}&x={% if forloop.index == 2 %}38{% else %}50{% endif %}&y=40&scale={% if forloop.index == 2 %}0.65{% elsif forloop.index == 3 %}1.4{% else %}1{% endif %}">
+          <div class="studio-editorial__image">
+            <span class="studio-editorial__edition">0{{ forloop.index }} / {{ 'sections.studio_showcase.possibilities' | t }}</span>
+            <div class="studio-editorial__frame" style="aspect-ratio: {{ garment_photo.aspect_ratio | default: 1 }}">
+              {%- if garment_photo != blank -%}
+                {{ garment_photo | image_url: width: 900 | image_tag: widths: '300,450,600,900', sizes: '(min-width: 750px) 32vw, 85vw', loading: 'lazy', class: 'studio-editorial__garment', alt: garment.title }}
               {%- endif -%}
-            {%- endfor -%}
-            {%- unless has_designs -%}
-              <button type="button" class="home-studio__design" aria-pressed="true" data-hc-design="0" data-hc-control disabled>
-                <img src="{{ 'custom-design-cross.svg' | asset_url }}" alt="" width="90" height="90" loading="lazy">
-                <span>{{ 'sections.home_studio.cross' | t }}</span><span class="home-studio__check" aria-hidden="true">✓</span>
-              </button>
-              <button type="button" class="home-studio__design" aria-pressed="false" data-hc-design="1" data-hc-control disabled>
-                <img src="{{ 'custom-design-faith.svg' | asset_url }}" alt="" width="90" height="90" loading="lazy">
-                <span>{{ 'sections.home_studio.faith' | t }}</span><span class="home-studio__check" aria-hidden="true">✓</span>
-              </button>
-            {%- endunless -%}
-            <button type="button" class="home-studio__blank" aria-pressed="false" data-hc-design="none" data-hc-control disabled>{{ 'sections.home_studio.no_motif' | t }}</button>
+              <div class="studio-editorial__art studio-editorial__art--{{ forloop.index }}" aria-hidden="true">
+                {%- if forloop.first and settings.logo != blank -%}
+                  {{ settings.logo | image_url: width: 600 | image_tag: alt: '', loading: 'lazy' }}
+                {%- elsif forloop.index == 2 -%}
+                  KA
+                {%- else -%}
+                  {{ 'sections.studio_showcase.statement' | t }}
+                {%- endif -%}
+              </div>
+            </div>
           </div>
-        </fieldset>
-
-        <fieldset class="home-studio__option home-studio__placement" data-hc-placement-controls>
-          <legend><span>03</span>{{ 'sections.home_studio.make_yours' | t }}</legend>
-          <div class="home-studio__placements">
-            <button type="button" aria-pressed="true" data-hc-placement="center" data-hc-control disabled>{{ 'sections.home_studio.center' | t }}</button>
-            <button type="button" aria-pressed="false" data-hc-placement="chest" data-hc-control disabled>{{ 'sections.home_studio.left_chest' | t }}</button>
-          </div>
-          <div class="home-studio__size">
-            <label for="MotifSize-{{ section.id }}">{{ 'sections.home_studio.motif_size' | t }}</label>
-            <input type="range" id="MotifSize-{{ section.id }}" min="35" max="150" step="5" value="90" data-hc-size data-hc-control disabled>
-            <output for="MotifSize-{{ section.id }}" data-hc-size-output>90%</output>
-          </div>
-        </fieldset>
-
-        <div class="home-studio__purchase">
-          <div class="home-studio__price-row">
-            <div><span>{{ 'sections.home_studio.garment_price' | t }}</span><strong data-hc-price>{{ first_canvas.settings.product.price | money }}</strong></div>
-            <p data-hc-availability>{% if first_canvas.settings.product.available %}{{ 'sections.home_studio.available' | t }}{% else %}{{ 'sections.home_studio.sold_out' | t }}{% endif %}</p>
-          </div>
-          <a href="{{ studio_url }}?canvas={{ first_key }}&motif={{ first_motif_key }}&x=50&y=42&scale=0.9" class="home-studio__continue" data-hc-continue>{{ section.settings.button_label | escape }} <span aria-hidden="true">↗</span></a>
-          <p class="home-studio__handoff">{{ 'sections.home_studio.handoff_note' | t }}</p>
-        </div>
-      </div>
+          <div class="studio-editorial__caption"><div><strong>{{ artwork_label }}</strong><span>{{ garment.title | escape }}</span></div><span aria-hidden="true">↗</span></div>
+          <span class="studio-editorial__start">{{ 'sections.studio_showcase.start_look' | t }} <span aria-hidden="true">→</span></span>
+        </a>
+      {%- endfor -%}
     </div>
-
-    <div class="home-studio__footer">
-      <p>{{ section.settings.trust_note | escape }}</p>
-      <a href="{{ section.settings.link | default: '/pages/create-your-own' }}">{{ 'sections.home_studio.explore' | t }} <span aria-hidden="true">→</span></a>
+    <div class="studio-editorial__footer">
+      <div><p>{{ 'sections.studio_showcase.invitation' | t }}</p><span>{{ 'sections.studio_showcase.steps' | t }}</span></div>
+      <a class="button" href="{{ studio_url }}">{{ 'sections.studio_showcase.enter' | t }} <span aria-hidden="true">↗</span></a>
     </div>
-    <p class="visually-hidden" role="status" aria-live="polite" data-hc-status></p>
+    <p class="studio-editorial__note">{{ 'sections.studio_showcase.sample_note' | t }}</p>
   </div>
-</home-customizer>
-
-<script src="{{ 'home-customizer.js' | asset_url }}" type="module"></script>
-
+</section>
 {% stylesheet %}
-  .home-studio {
-    display: block;
-    padding-block: clamp(3.5rem, 7vw, 6rem);
-    background: #f7f7f4;
-    color: #171715;
-    --hc-line: #deded8;
-    --hc-muted: #676760;
+  .studio-editorial { display: block; padding: 5rem 0; background: #f7f6f2; color: #1b1c18; }
+  .studio-editorial__heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; margin-bottom: 2.5rem; }
+  .studio-editorial__eyebrow { font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 1rem; }
+  .studio-editorial h2 { font-size: clamp(2.4rem, 4.5vw, 5rem); line-height: 1.03; letter-spacing: -0.055em; max-width: 48rem; font-weight: 500; }
+  .studio-editorial h2 em { display: block; font-family: Georgia, serif; font-weight: 400; }
+  .studio-editorial__heading > p { max-width: 20rem; font-size: 0.85rem; line-height: 1.7; color: #66685e; }
+  .studio-editorial__grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1rem; }
+  .studio-editorial__look { display: block; min-width: 0; }
+  .studio-editorial__image { position: relative; padding: 2rem 0.75rem 1rem; background: #e8e5df; overflow: hidden; }
+  .studio-editorial__look--2 .studio-editorial__image { background: #e3e6df; }
+  .studio-editorial__look--3 .studio-editorial__image { background: #e5e4e0; }
+  .studio-editorial__edition { position: absolute; top: 1rem; left: 1rem; z-index: 1; font-size: 0.55rem; letter-spacing: 0.12em; text-transform: uppercase; }
+  .studio-editorial__frame { position: relative; width: 100%; transition: transform 400ms; }
+  .studio-editorial__garment { display: block; width: 100%; height: auto; mix-blend-mode: multiply; }
+  .studio-editorial__art { position: absolute; left: 50%; top: 40%; width: 24%; transform: translate(-50%,-50%); font-family: var(--font-heading); font-weight: 700; color: #fff; text-align: center; line-height: 1; }
+  .studio-editorial__art img { width: 100%; height: auto; }
+  .studio-editorial__art--2 { left: 38%; width: 15.6%; font-size: clamp(0.7rem,2.3vw,2.5rem); }
+  .studio-editorial__art--3 { width: 33.6%; font-size: clamp(0.35rem,0.95vw,1rem); white-space: nowrap; }
+  .studio-editorial__caption { display: flex; justify-content: space-between; padding: 1.15rem 0 0.8rem; gap: 0.5rem; }
+  .studio-editorial__caption strong { display: block; font-size: 0.95rem; font-weight: 500; }
+  .studio-editorial__caption div > span { display: block; margin-top: 0.35rem; color: #68695f; font-size: 0.65rem; }
+  .studio-editorial__start { display: flex; justify-content: space-between; padding: 0.7rem 0; border-top: 1px solid #cfcec5; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  .studio-editorial__look:hover .studio-editorial__frame { transform: scale(1.025); }
+  .studio-editorial__footer { display: flex; align-items: center; justify-content: space-between; gap: 2rem; border-top: 1px solid #cfcec5; margin-top: 2rem; padding-top: 2rem; }
+  .studio-editorial__footer p { font-size: 1.25rem; letter-spacing: -0.025em; }
+  .studio-editorial__footer div > span { display: block; margin-top: 0.5rem; font-size: 0.7rem; color: #68695f; }
+  .studio-editorial__footer .button { min-width: 15rem; display: flex; justify-content: space-between; gap: 2rem; }
+  .studio-editorial__note { margin-top: 1.2rem; font-size: 0.6rem; color: #68695f; }
+  .studio-editorial a:focus-visible { outline: 2px solid #4d5a3e; outline-offset: 5px; }
+  @media(max-width: 749px) {
+    .studio-editorial { padding: 3rem 0; }
+    .studio-editorial__heading { display: block; margin-bottom: 1.5rem; }
+    .studio-editorial__heading > p { margin-top: 1rem; }
+    .studio-editorial__grid { grid-template-columns: repeat(3,85%); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 0.75rem; }
+    .studio-editorial__look { scroll-snap-align: start; }
+    .studio-editorial__art--2 { font-size: 1.8rem; }
+    .studio-editorial__art--3 { font-size: 0.65rem; }
+    .studio-editorial__footer { display: block; margin-top: 1rem; padding-top: 1.5rem; }
+    .studio-editorial__footer .button { width: 100%; margin-top: 1.25rem; }
   }
-  .home-studio [hidden] { display: none !important; }
-  .home-studio__heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; margin-bottom: 2rem; }
-  .home-studio__eyebrow { margin-bottom: 0.9rem; font-size: 0.67rem; letter-spacing: 0.18em; text-transform: uppercase; }
-  .home-studio__heading h2 { font-size: clamp(2.6rem, 5.8vw, 5.7rem); font-weight: 500; letter-spacing: -0.065em; line-height: 0.98; }
-  .home-studio__heading h2 > span:not(.home-studio__period) { font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-weight: 400; letter-spacing: -0.07em; }
-  .home-studio__period { color: #838d74; }
-  .home-studio__intro { max-width: 21rem; font-size: 0.88rem; line-height: 1.65; color: var(--hc-muted); }
-  .home-studio__workbench { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); border: 1px solid var(--hc-line); background: #fff; }
-  .home-studio__preview { min-width: 0; display: flex; flex-direction: column; padding: 1.35rem 1.5rem 1.1rem; background: #eeeee9; }
-  .home-studio__preview-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-  .home-studio__live { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.61rem; letter-spacing: 0.14em; text-transform: uppercase; }
-  .home-studio__live > span { width: 0.4rem; height: 0.4rem; border-radius: 50%; background: #748567; }
-  .home-studio__reset { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; font-size: 0.71rem; }
-  .home-studio__reset > span { font-size: 1.1rem; }
-  .home-studio__stage { flex: 1; display: grid; place-items: center; min-height: 28rem; padding: 1rem 0; }
-  .home-studio__frame { position: relative; width: min(100%, 26rem); aspect-ratio: var(--hc-ratio, 0.789474); max-height: 33rem; }
-  .home-studio__garment { display: block; width: 100%; height: 100%; object-fit: fill; mix-blend-mode: multiply; }
-  .home-studio__motif { position: absolute; padding: 0; transform: translate(-50%, -50%); touch-action: none; cursor: grab; user-select: none; border-radius: 2px; -webkit-user-select: none; }
-  .home-studio__motif img { display: block; width: 100%; height: auto; pointer-events: none; mix-blend-mode: multiply; }
-  .home-studio__motif:hover, .home-studio__motif:focus-visible { outline: 1px dashed #4e4e46; outline-offset: 5px; }
-  .home-studio__motif[data-dragging] { cursor: grabbing; outline: 1px dashed #4e4e46; outline-offset: 5px; }
-  .home-studio__preview-bottom { display: flex; justify-content: space-between; align-items: end; gap: 1rem; padding-top: 0.9rem; border-top: 1px solid #d5d5ce; }
-  .home-studio__preview-bottom > div { display: grid; gap: 0.2rem; }
-  .home-studio__preview-bottom strong { font-size: 0.78rem; font-weight: 500; }
-  .home-studio__preview-bottom span { color: var(--hc-muted); font-size: 0.65rem; }
-  .home-studio__preview-bottom > p { max-width: 11rem; color: var(--hc-muted); font-size: 0.65rem; line-height: 1.5; text-align: right; }
-  .home-studio__controls { min-width: 0; padding: 1.75rem 2rem; border-left: 1px solid var(--hc-line); }
-  .home-studio__controls-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: 1.7rem; }
-  .home-studio__controls-heading p { font-family: Georgia, 'Times New Roman', serif; font-size: 1.7rem; letter-spacing: -0.035em; }
-  .home-studio__controls-heading > span { color: var(--hc-muted); font-size: 0.59rem; text-transform: uppercase; letter-spacing: 0.12em; }
-  .home-studio__option { padding: 0; margin: 0 0 1.4rem; border: 0; min-width: 0; }
-  .home-studio__option legend { float: left; width: 100%; display: flex; align-items: center; gap: 0.75rem; margin: 0 0 0.65rem; padding: 0; font-size: 0.65rem; letter-spacing: 0.09em; text-transform: uppercase; }
-  .home-studio__option legend > span { color: #8b8b82; font-variant-numeric: tabular-nums; font-size: 0.58rem; }
-  .home-studio__option legend + * { clear: both; }
-  .home-studio__pieces { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .home-studio__piece { flex: 1 1 auto; min-height: 2.75rem; padding: 0.6rem 0.7rem; border: 1px solid var(--hc-line); font-size: 0.69rem; transition: border-color 120ms, background 120ms; }
-  .home-studio__piece[aria-pressed='true'] { background: #171715; border-color: #171715; color: #fff; }
-  .home-studio__designs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
-  .home-studio__design { position: relative; display: grid; justify-items: center; gap: 0.7rem; padding: 0.85rem 0.7rem 0.65rem; min-height: 6rem; background: #f8f8f5; border: 1px solid var(--hc-line); font-size: 0.67rem; }
-  .home-studio__design > img { width: 3.1rem; height: 3.1rem; object-fit: contain; }
-  .home-studio__design[aria-pressed='true'] { border-color: #171715; background: #f0f0eb; }
-  .home-studio__check { position: absolute; top: 0.4rem; right: 0.4rem; display: none; font-size: 0.6rem; }
-  .home-studio__design[aria-pressed='true'] .home-studio__check { display: block; }
-  .home-studio__blank { grid-column: 1 / -1; min-height: 1.5rem; justify-self: start; font-size: 0.65rem; color: var(--hc-muted); text-decoration: underline; text-underline-offset: 0.2rem; }
-  .home-studio__blank[aria-pressed='true'] { color: #171715; font-weight: 600; }
-  .home-studio__placements { display: flex; gap: 0.4rem; }
-  .home-studio__placements > button { flex: 1; min-height: 2.75rem; padding: 0.45rem; border: 1px solid var(--hc-line); font-size: 0.69rem; }
-  .home-studio__placements > button[aria-pressed='true'] { border-color: #171715; box-shadow: inset 0 0 0 1px #171715; }
-  .home-studio__size { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.9rem; }
-  .home-studio__size label, .home-studio__size output { font-size: 0.65rem; color: var(--hc-muted); white-space: nowrap; }
-  .home-studio__size input { width: 100%; min-width: 0; height: 1.5rem; margin: 0; accent-color: #171715; cursor: pointer; }
-  .home-studio__size output { min-width: 2.4rem; text-align: right; font-variant-numeric: tabular-nums; }
-  .home-studio__purchase { padding-top: 1.1rem; border-top: 1px solid var(--hc-line); }
-  .home-studio__price-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
-  .home-studio__price-row > div { display: grid; gap: 0.1rem; }
-  .home-studio__price-row span { color: var(--hc-muted); font-size: 0.6rem; }
-  .home-studio__price-row strong { font-size: 1.1rem; font-weight: 500; }
-  .home-studio__price-row > p { max-width: 11rem; font-size: 0.64rem; color: var(--hc-muted); text-align: right; }
-  .home-studio__continue { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.95rem 1.1rem; min-height: 3.25rem; background: #171715; color: #fff; font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase; transition: background 150ms; }
-  .home-studio__continue:hover { background: #3c4036; }
-  .home-studio__continue > span { font-size: 1.1rem; }
-  .home-studio__handoff { margin-top: 0.6rem; text-align: center; color: var(--hc-muted); font-size: 0.6rem; }
-  .home-studio__footer { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-top: 1rem; color: var(--hc-muted); font-size: 0.68rem; }
-  .home-studio__footer a { display: inline-flex; gap: 1rem; align-items: center; color: #171715; text-decoration: underline; text-underline-offset: 0.25rem; }
-  .home-studio button:focus-visible, .home-studio a:focus-visible, .home-studio input:focus-visible { outline: 2px solid #556349; outline-offset: 4px; }
-  .home-studio button:disabled { cursor: default; }
-  @media (max-width: 989px) {
-    .home-studio__workbench { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-    .home-studio__controls { padding: 1.5rem; }
-    .home-studio__heading { gap: 1.5rem; }
-    .home-studio__intro { max-width: 18rem; font-size: 0.8rem; }
-    .home-studio__preview { padding: 1rem; }
-    .home-studio__preview-bottom > p { max-width: 8rem; }
-  }
-  @media (max-width: 749px) {
-    html:has(home-customizer), body:has(home-customizer) { overflow-x: clip; }
-    .home-studio__heading { display: block; margin-bottom: 1.5rem; }
-    .home-studio__heading h2 { font-size: clamp(2.5rem, 10.5vw, 4rem); }
-    .home-studio__intro { max-width: 28rem; margin-top: 1rem; }
-    .home-studio__workbench { display: block; }
-    .home-studio__preview { position: sticky; top: 0; z-index: 3; padding: 0.4rem 1rem 0.75rem; }
-    .home-studio__stage { min-height: 0; padding: 0.5rem 0 1rem; }
-    .home-studio__frame { width: min(100%, calc(16rem * var(--hc-ratio))); max-height: none; }
-    .home-studio__controls { padding: 1.25rem; border-left: 0; border-top: 1px solid var(--hc-line); }
-    .home-studio__controls-heading { margin-bottom: 1.3rem; }
-    .home-studio__option { margin-bottom: 1.25rem; }
-    .home-studio__piece { min-height: 3rem; }
-    .home-studio__placements > button { min-height: 3rem; }
-    .home-studio__blank { min-height: 2.75rem; }
-    .home-studio__footer { align-items: start; font-size: 0.61rem; }
-    .home-studio__footer p { max-width: 11rem; }
-    .home-studio__footer a { gap: 0.45rem; white-space: nowrap; }
-  }
-  @media (max-width: 749px) and (max-height: 600px) {
-    .home-studio__preview { position: static; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .home-studio *, .home-studio *::before, .home-studio *::after { transition: none !important; }
-  }
+  @media(prefers-reduced-motion: reduce) { .studio-editorial__frame { transition: none; } }
 {% endstylesheet %}
-
 {% schema %}
 {
   "name": "Homepage custom studio",

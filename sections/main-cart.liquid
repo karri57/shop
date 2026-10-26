@@ -12,7 +12,9 @@
         {%- for item in cart.items -%}
           <div class="cart-item">
             <a href="{{ item.url }}" class="cart-item__media">
-              {%- if item.image -%}
+              {%- if item.properties['Design preview'] contains 'https://cdn.shopify.com/' -%}
+                <img src="{{ item.properties['Design preview'] | escape }}" alt="{{ item.product_title | escape }}" width="90" height="112" loading="lazy">
+              {%- elsif item.image -%}
                 <img src="{{ item.image | image_url: width: 180 }}" alt="{{ item.product_title | escape }}" width="90" height="112" loading="lazy">
               {%- endif -%}
             </a>
@@ -21,6 +23,9 @@
               {%- unless item.variant.title == 'Default Title' -%}
                 <div class="cart-item__variant">{{ item.variant.title }}</div>
               {%- endunless -%}
+              {%- if item.properties['Design preview'] contains 'https://cdn.shopify.com/' -%}
+                <a href="{{ item.properties['Design preview'] | escape }}" target="_blank" rel="noopener" class="link-underline">{{ 'sections.studio_showcase.view_preview' | t }}</a>
+              {%- endif -%}
               <quantity-input>
                 <div class="quantity-selector">
                   <button type="button" data-step="-1" aria-label="Decrease quantity">&minus;</button>

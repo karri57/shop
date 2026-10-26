@@ -218,13 +218,14 @@ class CartDrawer extends HTMLElement {
           .map((o) => escapeHtml(o.value))
           .join(' / ');
         const properties = Object.entries(item.properties || {})
-          .filter(([key, value]) => value && !key.startsWith('_') && key !== 'Design preview')
+          .filter(([key, value]) => value && !key.startsWith('_') && !['Design preview', 'Front artwork', 'Back artwork'].includes(key))
           .map(([, value]) => `<div class="cart-item__variant">${escapeHtml(value)}</div>`)
           .join('');
         // A studio design shows the shopper's own render instead of the
         // stock product photo.
         const designPreview = window.themeDesignPreviews?.get(item.properties?._design_id);
-        const image = designPreview || item.image;
+        const proof = /^https:\/\/cdn\.shopify\.com\/.*\/uploads\//.test(item.properties?.['Design preview'] || '') ? item.properties['Design preview'] : null;
+        const image = proof || designPreview || item.image;
         return `
       <div class="cart-item">
         <a href="${item.url}" class="cart-item__media">
@@ -237,6 +238,7 @@ class CartDrawer extends HTMLElement {
           </div>
           ${options ? `<div class="cart-item__variant">${options}</div>` : ''}
           ${properties}
+          ${proof ? `<a href="${escapeHtml(proof)}" target="_blank" rel="noopener" class="link-underline">${escapeHtml(window.themeStrings.designPreview)}</a>` : ''}
           ${item.original_line_price > item.final_line_price ? `<div class="cart-item__discount-price">${formatMoney(item.final_line_price)} <s>${formatMoney(item.original_line_price)}</s></div>` : ''}
           <div class="cart-item__controls">
             <form data-cart-update>
@@ -827,7 +829,13 @@ customElements.define('product-recommendations', ProductRecommendations);
 class RecentlyViewedProducts extends HTMLElement {
   connectedCallback() {
     const excludeId = Number(this.dataset.excludeId);
-    const items = window.themeRecentlyViewed.list(excludeId).slice(0, 8);
+    const seen = new Set();
+    const items = window.themeRecentlyViewed.list(excludeId).filter((item) => {
+      const key = item.url?.includes('/products/vintage-washed-frayed-hem-hoodie') ? 'vintage-hoodie' : item.id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, 8);
     if (items.length === 0) return;
 
     const row = this.querySelector('[data-recently-viewed-items]');
@@ -838,6 +846,7 @@ class RecentlyViewedProducts extends HTMLElement {
   }
 
   renderCard(item) {
+    if (item.url?.includes('/products/vintage-washed-frayed-hem-hoodie')) item = { ...item, url: '/products/vintage-washed-frayed-hem-hoodie' };
     const onSale = item.compareAtPrice > item.price;
     const priceHtml = onSale
       ? `<span class="price--sale">${formatMoney(item.price)}</span><span class="price__compare">${formatMoney(item.compareAtPrice)}</span>`

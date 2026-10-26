@@ -12,98 +12,46 @@
     "main": {
       "type": "main-customizer",
       "blocks": {
-        "canvas_classic_tee": {
+        "vintage_washed_frayed_hem_hoodie": {
           "type": "canvas",
           "settings": {
-            "label": "Classic Tee",
-            "product": "custom-classic-tee",
-            "color_1_name": "Grey",
-            "photo_1": "shopify://shop_images/IMG_1444.jpg",
-            "color_2_name": "Navy & Pink",
-            "photo_2": "shopify://shop_images/IMG_1445.jpg",
-            "color_3_name": "Yellow & Black",
-            "photo_3": "shopify://shop_images/IMG_1446_07ca41c6-b940-4b64-9c64-2582579eeeee.jpg",
-            "color_4_name": "Grey & White",
-            "photo_4": "shopify://shop_images/IMG_1443.jpg",
-            "noprint_x": 50,
-            "noprint_y": 20,
+            "label": "Vintage Washed Frayed-Hem Hoodie",
+            "product": "vintage-washed-frayed-hem-hoodie",
+            "photo_1": "shopify://shop_images/dfe38fa5d9dd42008b435aaea07abe6e.png",
+            "color_1_name": "Black",
             "noprint_w": 0,
             "noprint_h": 0
           }
         },
-        "canvas_classic_hoodie": {
+        "oversize_fleeced_hoodie": {
           "type": "canvas",
           "settings": {
-            "label": "Classic Hoodie",
-            "product": "custom-classic-hoodie",
-            "color_1_name": "Heather",
-            "photo_1": "shopify://shop_images/IMG_1334.jpg",
-            "color_2_name": "Grey",
-            "photo_2": "shopify://shop_images/IMG_1337.jpg",
-            "color_3_name": "Black",
-            "photo_3": "shopify://shop_images/IMG_1333.jpg",
-            "color_4_name": "",
-            "noprint_x": 50,
-            "noprint_y": 20,
+            "label": "Oversize Fleeced Hoodie",
+            "product": "oversize-fleeced-hoodie",
+            "photo_1": "shopify://shop_images/7ae5e25442bb4260a394b8035828c140.png",
+            "color_1_name": "Oat Gray",
             "noprint_w": 0,
             "noprint_h": 0
           }
         },
-        "canvas_classic_polo": {
+        "essential_cotton_t_shirt": {
           "type": "canvas",
           "settings": {
-            "label": "Classic Polo",
-            "product": "custom-classic-polo",
-            "color_1_name": "White",
-            "photo_1": "shopify://shop_images/IMG_1433.jpg",
-            "color_2_name": "Navy",
-            "photo_2": "shopify://shop_images/IMG_1432.jpg",
-            "photo_2_back": "shopify://shop_images/IMG_1431.jpg",
-            "color_3_name": "Creme",
-            "photo_3": "shopify://shop_images/IMG_1434.jpg",
-            "color_4_name": "Purple",
-            "photo_4": "shopify://shop_images/IMG_1435.jpg",
-            "noprint_x": 50,
-            "noprint_y": 20,
+            "label": "Essential Cotton T-Shirt",
+            "product": "essential-cotton-t-shirt",
+            "photo_1": "shopify://shop_images/464d9b191e6a40c292e0c594f9e3a29f.png",
+            "color_1_name": "Wine Red",
             "noprint_w": 0,
             "noprint_h": 0
           }
         },
-        "canvas_classic_sweater": {
+        "two_tone_fleeced_varsity_jacket": {
           "type": "canvas",
           "settings": {
-            "label": "Classic Sweater",
-            "product": "custom-classic-sweater",
-            "color_1_name": "White & Black",
-            "photo_1": "shopify://shop_images/IMG_1439.jpg",
-            "color_2_name": "White & Brown",
-            "photo_2": "shopify://shop_images/IMG_1440.jpg",
-            "color_3_name": "Red & Navy",
-            "photo_3": "shopify://shop_images/IMG_1441.jpg",
-            "color_4_name": "",
-            "noprint_x": 50,
-            "noprint_y": 20,
-            "noprint_w": 0,
-            "noprint_h": 0
-          }
-        },
-        "canvas_washed_hoodie": {
-          "type": "canvas",
-          "settings": {
-            "label": "Washed Hoodie",
-            "product": "custom-washed-hoodie",
-            "color_1_name": "Stone",
-            "photo_1": "shopify://shop_images/c200b860beda4b769b54a13a30aa77ed.png",
-            "photo_1_back": "shopify://shop_images/IMG_1414.jpg",
-            "color_2_name": "Stone",
-            "photo_2": "shopify://shop_images/IMG_1417.jpg",
-            "photo_2_back": "shopify://shop_images/IMG_1418.jpg",
-            "color_3_name": "Black",
-            "photo_3": "shopify://shop_images/IMG_1415.jpg",
-            "photo_3_back": "shopify://shop_images/IMG_1416.jpg",
-            "color_4_name": "",
-            "noprint_x": 50,
-            "noprint_y": 20,
+            "label": "Two-Tone Fleeced Varsity Jacket",
+            "product": "two-tone-fleeced-varsity-jacket",
+            "photo_1": "shopify://shop_images/f35614b9e66041639e0b82d0ceecfb0f.png",
+            "color_1_name": "Black with White",
             "noprint_w": 0,
             "noprint_h": 0
           }
@@ -124,17 +72,16 @@
         }
       },
       "block_order": [
-        "canvas_classic_tee",
-        "canvas_classic_hoodie",
-        "canvas_classic_polo",
-        "canvas_classic_sweater",
-        "canvas_washed_hoodie",
+        "vintage_washed_frayed_hem_hoodie",
+        "oversize_fleeced_hoodie",
+        "essential_cotton_t_shirt",
+        "two_tone_fleeced_varsity_jacket",
         "design_logo_1",
         "design_logo_2"
       ],
       "settings": {
         "heading": "Make it yours",
-        "subtext": "Choose a signature motif, place it your way, and create a piece that is only yours.",
+        "subtext": "Choose your piece, make your mark, and preview your finished design.",
         "fee_product": ""
       }
     }

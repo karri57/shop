@@ -19,7 +19,11 @@
   <meta name="description" content="{{ page_description | escape }}">
 {%- endif -%}
 
-<link rel="canonical" href="{{ canonical_url }}">
+{%- if product.handle contains 'vintage-washed-frayed-hem-hoodie-' -%}
+  <link rel="canonical" href="{{ shop.url }}/products/vintage-washed-frayed-hem-hoodie">
+{%- else -%}
+  <link rel="canonical" href="{{ canonical_url }}">
+{%- endif -%}
 
 <meta property="og:site_name" content="{{ shop.name }}">
 <meta property="og:url" content="{{ canonical_url }}">

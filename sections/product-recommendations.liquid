@@ -18,7 +18,13 @@
     </div>
 
     <div class="carousel-row">
+      {%- assign hoodie_family_rendered = false -%}
       {%- for rec_product in recommendations.products -%}
+        {%- if rec_product.handle contains 'vintage-washed-frayed-hem-hoodie' -%}
+          {%- if hoodie_family_rendered -%}{%- continue -%}{%- endif -%}
+          {%- assign rec_product = all_products['vintage-washed-frayed-hem-hoodie'] -%}
+          {%- assign hoodie_family_rendered = true -%}
+        {%- endif -%}
         <div class="carousel-row__item">
           {%- render 'product-card', product: rec_product -%}
         </div>

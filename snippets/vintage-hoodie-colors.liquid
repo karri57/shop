@@ -1,0 +1,30 @@
+{%- liquid
+  assign handles = 'vintage-washed-frayed-hem-hoodie,vintage-washed-frayed-hem-hoodie-1,vintage-washed-frayed-hem-hoodie-2,vintage-washed-frayed-hem-hoodie-3,vintage-washed-frayed-hem-hoodie-4,vintage-washed-frayed-hem-hoodie-5,vintage-washed-frayed-hem-hoodie-6,vintage-washed-frayed-hem-hoodie-7,vintage-washed-frayed-hem-hoodie-8,vintage-washed-frayed-hem-hoodie-9' | split: ','
+-%}
+<div class="hoodie-family">
+  <p>{{ 'sections.studio_showcase.color' | t }}: <strong>{{ product.selected_or_first_available_variant.option1 | escape }}{% if product.handle == 'vintage-washed-frayed-hem-hoodie-2' %} · 2{% endif %}</strong></p>
+  <div class="hoodie-family__colors">
+    {%- for handle in handles -%}
+      {%- assign sibling = all_products[handle] -%}
+      {%- if sibling != blank -%}
+        {%- capture color_label -%}{{ sibling.selected_or_first_available_variant.option1 }}{% if handle == 'vintage-washed-frayed-hem-hoodie-2' %} · 2{% endif %}{%- endcapture -%}
+        <a href="{{ sibling.url }}" class="hoodie-family__color" {% if sibling.id == product.id %}aria-current="true"{% endif %} aria-label="{{ color_label | escape }}" title="{{ color_label | escape }}">
+          {{ sibling.featured_image | image_url: width: 140 | image_tag: alt: color_label, width: 70, height: 80, loading: 'lazy' }}
+          <span>{{ color_label | escape }}</span>
+        </a>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+  <a class="button button--secondary" href="/pages/design-studio?canvas=vintage-washed-frayed-hem-hoodie&colorway={{ product.selected_or_first_available_variant.option1 | handleize }}{% if product.handle == 'vintage-washed-frayed-hem-hoodie-2' %}-2{% endif %}">{{ 'sections.studio_showcase.customize' | t }}</a>
+</div>
+{% stylesheet %}
+  .hoodie-family { margin: 1.5rem 0; }
+  .hoodie-family > p { font-size: 0.8rem; margin-bottom: 0.75rem; }
+  .hoodie-family__colors { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 0.4rem; margin-bottom: 1rem; }
+  .hoodie-family__color { display: block; border: 1px solid #d8d8d2; padding: 0.3rem; text-align: center; }
+  .hoodie-family__color[aria-current] { border-color: #181818; box-shadow: inset 0 0 0 1px #181818; }
+  .hoodie-family__color img { display: block; width: 100%; height: auto; }
+  .hoodie-family__color span { display: block; margin-top: 0.25rem; font-size: 0.55rem; line-height: 1.3; }
+  .hoodie-family__color:focus-visible { outline: 2px solid #4d5a3e; outline-offset: 3px; }
+{% endstylesheet %}
+

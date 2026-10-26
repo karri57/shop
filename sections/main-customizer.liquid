@@ -38,6 +38,9 @@
     <script type="application/json" data-kc-config>
       {
         "designs": [
+          { "key": "ka-monogram", "label": "KA", "text": "KA", "price": 0 },
+          { "key": "create-your-legacy", "label": {{ 'sections.studio_showcase.statement' | t | json }}, "text": {{ 'sections.studio_showcase.statement' | t | json }}, "price": 0 },
+          {% if settings.logo != blank %}{ "key": "signature-logo", "label": {{ 'sections.studio_showcase.signature' | t | json }}, "src": {{ settings.logo | image_url: width: 1000 | json }}, "price": 0 },{% endif %}
           {%- for block in section.blocks -%}
             {%- if block.type == 'design' and block.settings.image != blank -%}
               {
@@ -64,87 +67,9 @@
           {%- endunless -%}
           null
         ],
-        "canvases": [
-          {%- for block in section.blocks -%}
-            {%- if block.type == 'canvas' and block.settings.product != blank or block.type == 'canvas' and block.settings.photo_1 != blank -%}
-              {%- assign canvas_variant = block.settings.product.selected_or_first_available_variant -%}
-              {%- assign label_down = block.settings.label | downcase -%}
-              {%- assign fallback_asset = 'custom-tee.svg' -%}
-              {%- if label_down contains 'hoodie' -%}
-                {%- assign fallback_asset = 'custom-hoodie.svg' -%}
-              {%- elsif label_down contains 'polo' -%}
-                {%- assign fallback_asset = 'custom-polo.svg' -%}
-              {%- elsif label_down contains 'sweater' -%}
-                {%- assign fallback_asset = 'custom-sweater.svg' -%}
-              {%- endif -%}
-              {%- assign front_1 = fallback_asset | asset_url -%}
-              {%- if block.settings.photo_1 != blank -%}{%- assign front_1 = block.settings.photo_1 | image_url: width: 900 -%}{%- endif -%}
-              {%- assign back_1 = '' -%}
-              {%- if block.settings.photo_1_back != blank -%}{%- assign back_1 = block.settings.photo_1_back | image_url: width: 900 -%}{%- endif -%}
-              {%- assign back_2 = '' -%}
-              {%- if block.settings.photo_2_back != blank -%}{%- assign back_2 = block.settings.photo_2_back | image_url: width: 900 -%}{%- endif -%}
-              {%- assign back_3 = '' -%}
-              {%- if block.settings.photo_3_back != blank -%}{%- assign back_3 = block.settings.photo_3_back | image_url: width: 900 -%}{%- endif -%}
-              {%- assign back_4 = '' -%}
-              {%- if block.settings.photo_4_back != blank -%}{%- assign back_4 = block.settings.photo_4_back | image_url: width: 900 -%}{%- endif -%}
-              {%- assign has_zone = false -%}
-              {%- if block.settings.noprint_w > 0 and block.settings.noprint_h > 0 -%}{%- assign has_zone = true -%}{%- endif -%}
-              {
-                "key": {{ block.settings.label | handleize | json }},
-                "label": {{ block.settings.label | json }},
-                "variant": {{ canvas_variant.id | json }},
-                "price": {{ canvas_variant.price | json }},
-                "variants": [
-                  {%- for variant in block.settings.product.variants -%}
-                    {
-                      "id": {{ variant.id | json }},
-                      "title": {{ variant.title | json }},
-                      "available": {{ variant.available | json }},
-                      "price": {{ variant.price | json }}
-                    },
-                  {%- endfor -%}
-                  null
-                ],
-                "colorways": [
-                  {
-                    "name": {{ block.settings.color_1_name | default: 'Standard' | json }},
-                    "front": {{ front_1 | json }},
-                    "back": {{ back_1 | json }}
-                  },
-                  {%- if block.settings.photo_2 != blank -%}
-                    {
-                      "name": {{ block.settings.color_2_name | default: 'Colorway 2' | json }},
-                      "front": {{ block.settings.photo_2 | image_url: width: 900 | json }},
-                      "back": {{ back_2 | json }}
-                    },
-                  {%- endif -%}
-                  {%- if block.settings.photo_3 != blank -%}
-                    {
-                      "name": {{ block.settings.color_3_name | default: 'Colorway 3' | json }},
-                      "front": {{ block.settings.photo_3 | image_url: width: 900 | json }},
-                      "back": {{ back_3 | json }}
-                    },
-                  {%- endif -%}
-                  {%- if block.settings.photo_4 != blank -%}
-                    {
-                      "name": {{ block.settings.color_4_name | default: 'Colorway 4' | json }},
-                      "front": {{ block.settings.photo_4 | image_url: width: 900 | json }},
-                      "back": {{ back_4 | json }}
-                    },
-                  {%- endif -%}
-                  null
-                ],
-                "noGoZone": {%- if has_zone -%}
-                  { "x": {{ block.settings.noprint_x }}, "y": {{ block.settings.noprint_y }}, "w": {{ block.settings.noprint_w }}, "h": {{ block.settings.noprint_h }} }
-                {%- else -%}
-                  null
-                {%- endif -%}
-              },
-            {%- endif -%}
-          {%- endfor -%}
-          null
-        ],
+        "canvases": {% render 'studio-catalog' %},
         "feeVariant": {{ section.settings.fee_product.selected_or_first_available_variant.id | json }},
+        "strings": { "proofError": {{ 'sections.studio_showcase.proof_error' | t | json }}, "attachmentError": {{ 'sections.studio_showcase.attachment_error' | t | json }} },
         "upload": {
           "cloud": {{ settings.design_upload_cloud | json }},
           "preset": {{ settings.design_upload_preset | json }}
@@ -238,6 +163,10 @@
 
         <div class="kc__options">
           <section class="kc__option">
+            <label for="StudioGarment-{{ section.id }}">{{ 'sections.studio_showcase.garment' | t }}</label>
+            <select id="StudioGarment-{{ section.id }}" class="kc__garment-select" data-kc-garment></select>
+          </section>
+          <section class="kc__option">
             <div class="kc__option-heading">
               <span class="kc__option-number">01</span>
               <div>
@@ -253,6 +182,17 @@
                   {{ 'sections.customizer.designs_empty' | t }}
                 {%- endif -%}
               </p>
+            </div>
+            <div class="kc__text-form">
+              <label for="StudioText-{{ section.id }}">{{ 'sections.studio_showcase.your_words' | t }}</label>
+              <input id="StudioText-{{ section.id }}" type="text" maxlength="32" placeholder="{{ 'sections.studio_showcase.text_placeholder' | t }}" data-kc-text>
+              <label for="StudioInk-{{ section.id }}">{{ 'sections.studio_showcase.ink' | t }}</label>
+              <select id="StudioInk-{{ section.id }}" data-kc-ink>
+                <option value="#191919">{{ 'sections.studio_showcase.black' | t }}</option>
+                <option value="#ffffff">{{ 'sections.studio_showcase.white' | t }}</option>
+                <option value="#e4d6b8">{{ 'sections.studio_showcase.cream' | t }}</option>
+              </select>
+              <button type="button" class="button button--secondary" data-kc-add-text>{{ 'sections.studio_showcase.add_words' | t }}</button>
             </div>
             <p class="kc__hint">{{ 'sections.customizer.gesture_hint' | t }}</p>
           </section>
@@ -302,6 +242,7 @@
           <p class="kc__note" data-kc-stock-note hidden>{{ 'sections.customizer.sold_out_note' | t }}</p>
           <p class="form-error" data-kc-error role="alert" aria-live="polite" hidden></p>
           <p class="visually-hidden" data-kc-status role="status" aria-live="polite"></p>
+          <button type="button" class="link-underline kc__download" data-kc-download>{{ 'sections.studio_showcase.download' | t }}</button>
           <p class="kc__trust">{{ 'sections.customizer.trust_note' | t }}</p>
         </div>
       </div>
@@ -330,6 +271,11 @@
 
 {% stylesheet %}
   .kc [hidden] { display: none !important; }
+  .kc__garment-select, .kc__text-form input, .kc__text-form select { width: 100%; min-height: 44px; padding: 0.7rem; border: 1px solid #d8d8d2; background: #fff; color: #191919; }
+  .kc__text-form { display: grid; gap: 0.6rem; margin-top: 1.2rem; }
+  .kc__text-form label, .kc__option > label { display: block; margin-bottom: 0.4rem; font-size: 0.75rem; }
+  .kc__design-art--lettering { background: #596052; }
+  .kc__download { display: block; margin: 1rem auto; font-size: 0.75rem; }
 {% endstylesheet %}
 
 {% schema %}

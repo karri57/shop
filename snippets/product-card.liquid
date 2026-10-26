@@ -42,6 +42,7 @@
   endif
 -%}
 
+{%- unless product.handle contains 'vintage-washed-frayed-hem-hoodie-' -%}
 <div class="product-card">
   <div class="product-card__media">
     <a href="{{ product.url }}" class="product-card__media-link">
@@ -75,7 +76,7 @@
       <span class="product-card__badge product-card__badge--end product-card__badge--sale">{{ 'products.product.sale' | t }}</span>
     {%- endif -%}
 
-    {%- if product.available and quick_add_style != 'button' -%}
+    {%- if product.available and quick_add_style != 'button' and product.handle != 'vintage-washed-frayed-hem-hoodie' -%}
       <button
         type="button"
         class="product-card__quick-add"
@@ -100,7 +101,9 @@
     </div>
   </a>
 
-  {%- if quick_add_style == 'button' -%}
+  {%- if product.handle == 'vintage-washed-frayed-hem-hoodie' -%}
+    <a class="button button--secondary" href="{{ product.url }}">{{ 'sections.studio_showcase.versions' | t }}</a>
+  {%- elsif quick_add_style == 'button' -%}
     <div class="product-card__decision-slot">
       {%- if has_multiple_colors -%}
         <div class="swatch-dots" aria-label="{{ color_option.name | escape }}">
@@ -151,3 +154,5 @@
     </div>
   {%- endif -%}
 </div>
+
+{%- endunless -%}

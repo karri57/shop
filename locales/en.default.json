@@ -8,6 +8,11 @@
  * ------------------------------------------------------------
  */
 {
+  "404": {
+    "title": "Page not found",
+    "subtext": "The page you were looking for does not exist.",
+    "link": "Continue shopping"
+  },
   "general": {
     "search": {
       "placeholder": "Search",
@@ -128,11 +133,6 @@
     "popup_success_heading": "Thanks for joining!",
     "popup_success_body": "Your welcome discount is on its way to your inbox."
   },
-  "404": {
-    "title": "Page not found",
-    "subtext": "The page you were looking for does not exist.",
-    "link": "Continue shopping"
-  },
   "gift_cards": {
     "issued": {
       "title": "Here's your {{ value }} gift card for {{ shop }}!",
@@ -172,7 +172,7 @@
     },
     "customizer": {
       "gesture_hint": "Choose a motif, then drag it into place. Select it again to resize, rotate, or remove.",
-      "trust_note": "Secure checkout · your design is saved with your order",
+      "trust_note": "Your design preview and artwork are attached to your item for our production team.",
       "change_garment": "Change garment",
       "eyebrow": "KA Custom Studio",
       "designing": "Designing",
@@ -181,7 +181,7 @@
       "choose_motif": "Choose a motif",
       "no_motif": "No motif selected",
       "choose_color": "Choose a color",
-      "review_hint": "Made by you, finished by KA.",
+      "review_hint": "Check your placement, color, and size. Your finished design image travels with your order.",
       "sold_out_note": "This garment is currently sold out. You can still explore your design or choose another garment.",
       "setup_prompt": "No garments set up yet. In the theme editor, open this page's Design studio section and add a Canvas block with a garment photo.",
       "empty_title": "The design studio is taking a short break",
@@ -228,6 +228,37 @@
     "customizer_promo": {
       "drag_hint": "Drag a design onto the shirt — double-tap a placed design to remove it",
       "clear": "Clear"
+    },
+    "studio_showcase": {
+      "intro": "Signature marks. Your initials. Words to live by. Discover what your next piece could become.",
+      "signature": "The signature",
+      "initials": "The personal touch",
+      "words": "The statement",
+      "statement": "CREATE YOUR LEGACY",
+      "possibilities": "A possibility",
+      "start_look": "Make this yours",
+      "invitation": "Your next favorite piece starts with an idea.",
+      "steps": "Choose your garment. Make your mark. Review your design.",
+      "enter": "Enter the design studio",
+      "sample_note": "Design inspiration. Final colors, placement, and size are chosen in the studio.",
+      "garment": "Choose your garment",
+      "your_words": "Your initials or a short statement",
+      "text_placeholder": "Make it personal",
+      "ink": "Lettering color",
+      "black": "Black",
+      "white": "White",
+      "cream": "Cream",
+      "add_words": "Add lettering",
+      "download": "Download my design preview",
+      "proof_error": "We couldn’t create your design image. Please try again before adding your piece.",
+      "attachment_error": "Your design image could not be attached. Your item has not been kept in the cart. Please try again.",
+      "order_note": "Your design preview and artwork are attached to your item for our production team.",
+      "color": "Color",
+      "customize": "Customize this piece",
+      "versions": "Color options",
+      "review_confirm": "I have reviewed my design, color, and size.",
+      "empty_design": "Add a logo or lettering to start your design.",
+      "view_preview": "View your design"
     }
   }
 }

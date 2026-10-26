@@ -1,186 +1,38 @@
-{%- comment -%}
-  "Choose your canvas" picker: rows of garments to customize. Each card
-  plays the same auto design-showcase animation as the home page promo
-  (compact mode), and clicking a card opens the designer with that
-  garment preselected via ?garment=.
-{%- endcomment -%}
-
 {%- liquid
   assign designer_url = section.settings.designer_url | default: '/pages/design-studio'
-  assign has_picker_designs = false
-  for block in section.blocks
-    if block.type == 'design' and block.settings.image != blank
-      assign has_picker_designs = true
-    endif
-  endfor
+  assign handles = 'vintage-washed-frayed-hem-hoodie,oversize-fleeced-hoodie,essential-cotton-t-shirt,two-tone-fleeced-varsity-jacket,women-s-mineral-wash-cotton-crop-t-shirt' | split: ','
 -%}
-
-<div class="page-width section picker">
+<div class="page-width section studio-picker">
   <div class="picker__header">
-    <h1 class="picker__title">{{ section.settings.heading }}</h1>
-    {%- if section.settings.subtext != blank -%}
-      <p class="picker__subtext">{{ section.settings.subtext }}</p>
-    {%- endif -%}
+    <h1 class="picker__title">{{ section.settings.heading | escape }}</h1>
+    <p class="picker__subtext">{{ section.settings.subtext | escape }}</p>
   </div>
-
-  {%- assign garments = 'tee,hoodie' | split: ',' -%}
-  {%- for garment in garments -%}
-    {%- liquid
-      assign row_heading = section.settings.tee_row_heading
-      if garment == 'hoodie'
-        assign row_heading = section.settings.hoodie_row_heading
-      endif
-
-      assign has_cards = false
-      for block in section.blocks
-        if block.type == 'product' and block.settings.garment == garment
-          assign has_cards = true
-        endif
-      endfor
-    -%}
-
-    {%- if has_cards -%}
-      <div class="picker__row">
-        <h2 class="picker__row-heading">{{ row_heading }}</h2>
-        <div class="picker__grid">
-          {%- for block in section.blocks -%}
-            {%- if block.type == 'product' and block.settings.garment == garment -%}
-              {%- liquid
-                assign colorway_names = block.settings.color_1_name | default: 'Standard'
-                assign colorway_names = colorway_names | append: '||' | append: block.settings.color_2_name
-                assign colorway_names = colorway_names | append: '||' | append: block.settings.color_3_name
-                assign colorway_names = colorway_names | append: '||' | append: block.settings.color_4_name
-                assign colorway_names = colorway_names | split: '||'
-
-                assign label_down = block.settings.label | downcase
-                assign fallback_asset = 'custom-tee.svg'
-                if label_down contains 'hoodie'
-                  assign fallback_asset = 'custom-hoodie.svg'
-                elsif label_down contains 'polo'
-                  assign fallback_asset = 'custom-polo.svg'
-                elsif label_down contains 'sweater'
-                  assign fallback_asset = 'custom-sweater.svg'
-                endif
-
-                assign primary_image_url = fallback_asset | asset_url
-                assign primary_image_height = 760
-                if block.settings.image != blank
-                  assign primary_image_url = block.settings.image | image_url: width: 600
-                  assign primary_image_height = 600 | divided_by: block.settings.image.aspect_ratio | default: 750
-                endif
-              -%}
-              <div class="picker-card" {{ block.shopify_attributes }}>
-              <a href="{{ designer_url }}?canvas={{ block.settings.label | handleize }}" class="picker-card__link">
-                <showcase-demo class="showcase picker-card__media" data-compact data-zone="50,42,34,30">
-                  <script type="application/json" data-demo-designs>
-                    [
-                      {%- for design_block in section.blocks -%}
-                        {%- if design_block.type == 'design' and design_block.settings.image != blank -%}
-                          { "src": {{ design_block.settings.image | image_url: width: 240 | json }} },
-                        {%- endif -%}
-                      {%- endfor -%}
-                      {%- unless has_picker_designs -%}
-                        { "src": {{ 'custom-design-cross.svg' | asset_url | json }} },
-                        { "src": {{ 'custom-design-faith.svg' | asset_url | json }} },
-                      {%- endunless -%}
-                      null
-                    ]
-                  </script>
-                  <div class="showcase__stage" data-demo-stage>
-                    <img
-                      src="{{ primary_image_url }}"
-                      alt="{{ block.settings.label | escape }}"
-                      width="600"
-                      height="{{ primary_image_height }}"
-                      class="showcase__shirt showcase__frame showcase__frame--active"
-                      data-demo-frame
-                      loading="lazy"
-                      draggable="false"
-                    >
-                    {%- assign extra_images = 'image_2,image_3,image_4' | split: ',' -%}
-                    {%- for image_key in extra_images -%}
-                      {%- assign extra = block.settings[image_key] -%}
-                      {%- if extra != blank -%}
-                        <img
-                          src="{{ extra | image_url: width: 600 }}"
-                          alt=""
-                          width="600"
-                          height="{{ 600 | divided_by: extra.aspect_ratio | default: 750 }}"
-                          class="showcase__frame"
-                          data-demo-frame
-                          loading="lazy"
-                          draggable="false"
-                        >
-                      {%- endif -%}
-                    {%- endfor -%}
-                    <div class="showcase__layer" data-demo-placements></div>
-                  </div>
-                  <div class="showcase__cursor showcase__cursor--small" data-demo-cursor aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="20" height="20">
-                      <path d="M4 2 L4 20 L9 15.5 L12.5 22 L15.5 20.5 L12 14 L19 13.5 Z" fill="#111" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                </showcase-demo>
-                <div class="picker-card__label">{{ block.settings.label }}</div>
-                <span class="picker-card__cta">{{ section.settings.card_cta }}</span>
-              </a>
-
-              {%- assign colorway_images = 'image,image_2,image_3,image_4' | split: ',' -%}
-              {%- assign swatch_count = 0 -%}
-              {%- for image_key in colorway_images -%}
-                {%- if block.settings[image_key] != blank -%}
-                  {%- assign swatch_count = swatch_count | plus: 1 -%}
-                {%- endif -%}
-              {%- endfor -%}
-
-              {%- if swatch_count > 1 -%}
-                <div class="picker-card__swatches">
-                  {%- for image_key in colorway_images -%}
-                    {%- assign colorway_image = block.settings[image_key] -%}
-                    {%- if colorway_image != blank -%}
-                      {%- assign colorway_name = colorway_names[forloop.index0] | default: 'Colorway' -%}
-                      <button
-                        type="button"
-                        class="picker-card__swatch"
-                        data-picker-swatch="{{ forloop.index0 }}"
-                        data-colorway="{{ colorway_name | handleize }}"
-                        aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
-                        title="{{ colorway_name | escape }}"
-                        aria-label="{{ colorway_name | escape }}"
-                      >
-                        <img
-                          src="{{ colorway_image | image_url: width: 120 }}"
-                          alt=""
-                          width="120"
-                          height="{{ 120 | divided_by: colorway_image.aspect_ratio | default: 150 }}"
-                          loading="lazy"
-                        >
-                      </button>
-                    {%- endif -%}
-                  {%- endfor -%}
-                </div>
-              {%- endif -%}
-              </div>
-            {%- endif -%}
-          {%- endfor -%}
-        </div>
-      </div>
-    {%- endif -%}
-  {%- endfor -%}
-
-  {%- assign has_products = false -%}
-  {%- for block in section.blocks -%}
-    {%- if block.type == 'product' -%}
-      {%- assign has_products = true -%}
-    {%- endif -%}
-  {%- endfor -%}
-  {%- unless has_products -%}
-    <p class="kc__empty">Add garment blocks (with photos) to this section in the theme editor to build the picker.</p>
-  {%- endunless -%}
+  <div class="studio-picker__grid">
+    {%- for handle in handles -%}
+      {%- assign garment = all_products[handle] -%}
+      {%- if garment != blank -%}
+        <a class="studio-picker__card" href="{{ designer_url }}?canvas={{ handle }}">
+          <div class="studio-picker__photo">{{ garment.featured_image | image_url: width: 900 | image_tag: alt: garment.title, widths: '300,600,900', sizes: '(min-width: 750px) 30vw, 80vw', loading: 'lazy' }}</div>
+          <h2>{{ garment.title | escape }}</h2>
+          <p>{{ garment.price | money }}</p>
+          <span>{{ 'sections.studio_showcase.customize' | t }} <span aria-hidden="true">↗</span></span>
+        </a>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
 </div>
-
-<script src="{{ 'customizer-promo.js' | asset_url }}" type="module"></script>
-
+{% stylesheet %}
+  .studio-picker__grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 2rem 1rem; }
+  .studio-picker__photo { background: #eeede8; overflow: hidden; }
+  .studio-picker__photo img { display: block; width: 100%; height: auto; mix-blend-mode: multiply; transition: transform 300ms; }
+  .studio-picker__card:hover img { transform: scale(1.025); }
+  .studio-picker__card h2 { font-size: 1rem; margin: 1rem 0 0.5rem; }
+  .studio-picker__card > p { font-size: 0.8rem; margin-bottom: 1rem; }
+  .studio-picker__card > span { display: flex; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid #d8d8d2; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .studio-picker__card:focus-visible { outline: 2px solid #4d5a3e; outline-offset: 5px; }
+  @media(max-width:749px) { .studio-picker__grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .studio-picker__card h2 { font-size: 0.8rem; } }
+  @media(prefers-reduced-motion:reduce) { .studio-picker__photo img { transition: none; } }
+{% endstylesheet %}
 {% schema %}
 {
   "name": "Customizer picker",

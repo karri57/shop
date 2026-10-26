@@ -92,6 +92,11 @@
       </p>
     {%- endif -%}
 
+    {% if product.handle contains 'vintage-washed-frayed-hem-hoodie' %}
+      {% render 'vintage-hoodie-colors', product: product %}
+    {% elsif product.handle == 'oversize-fleeced-hoodie' or product.handle == 'essential-cotton-t-shirt' or product.handle == 'two-tone-fleeced-varsity-jacket' or product.handle == 'women-s-mineral-wash-cotton-crop-t-shirt' %}
+      <a class="button button--secondary" href="/pages/design-studio?canvas={{ product.handle }}">{{ 'sections.studio_showcase.customize' | t }}</a>
+    {% endif %}
     <product-form>
       <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data">
         <input type="hidden" name="id" value="{{ current_variant.id }}" ref="variantId">
@@ -104,7 +109,7 @@
             </script>
 
             {%- for option in product.options_with_values -%}
-              <fieldset class="product__option" data-option-index="{{ forloop.index0 }}">
+              <fieldset class="product__option" data-option-index="{{ forloop.index0 }}" {% if product.handle contains 'vintage-washed-frayed-hem-hoodie' and forloop.index0 == color_option_index %}hidden{% endif %}>
                 <span class="product__option-name">{{ option.name }}</span>
 
                 {%- if forloop.index0 == color_option_index -%}

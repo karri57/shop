@@ -26,7 +26,13 @@
 
     {%- if search.results_count > 0 -%}
       <div class="product-grid" style="--grid-columns: 4;">
+        {%- assign hoodie_family_rendered = false -%}
         {%- for item in search.results -%}
+          {%- if item.handle contains 'vintage-washed-frayed-hem-hoodie' -%}
+            {%- if hoodie_family_rendered -%}{%- continue -%}{%- endif -%}
+            {%- assign item = all_products['vintage-washed-frayed-hem-hoodie'] -%}
+            {%- assign hoodie_family_rendered = true -%}
+          {%- endif -%}
           {%- if item.object_type == 'product' -%}
             {%- render 'product-card', product: item -%}
           {%- endif -%}

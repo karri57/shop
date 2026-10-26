@@ -1,21 +1,3 @@
-/**
- * KA Design Studio.
- *
- * Real garment "canvases" (photo + colorway swatches + size variants +
- * product) are defined as section blocks; the picker page links here
- * with ?canvas=<handle>. Placements are stored per canvas and side as
- * percentages of the stage, keyed "<canvasKey>-<front|back>".
- *
- * On add-to-cart the design is rendered to a PNG: a thumbnail is kept
- * in localStorage so the cart shows the actual design, and — when a
- * Cloudinary unsigned preset is configured in theme settings — the
- * full preview is uploaded and its URL attached to the order as the
- * "Design preview" line item property.
- *
- * Designs may carry a per-placement price; the total is charged by
- * adding the configured $1 "fee product" at quantity = total fee.
- */
-
 function money(cents) {
   return (cents / 100).toLocaleString(document.documentElement.lang || 'en', {
     style: 'currency',
@@ -30,7 +12,7 @@ function customizerRoute(path) {
 }
 
 class KaCustomizer extends HTMLElement {
-  connectedCallback() {
+  async connectedCallback() {
     const configEl = this.querySelector('[data-kc-config]');
     // No config element means no canvases are set up; the section renders
     // its own setup prompt and there is nothing to wire.
@@ -40,11 +22,8 @@ class KaCustomizer extends HTMLElement {
       const parsed = JSON.parse(configEl.textContent);
       this.config = {
         designs: (parsed.designs || []).filter(Boolean),
-        canvases: (parsed.canvases || []).filter(Boolean).map((canvas) => ({
-          ...canvas,
-          colorways: (canvas.colorways || []).filter(Boolean),
-          variants: (canvas.variants || []).filter(Boolean),
-        })),
+        canvases: this.prepareCatalog((parsed.canvases || []).filter(Boolean)),
+        strings: parsed.strings || {},
         feeVariant: parsed.feeVariant || null,
         upload: parsed.upload || {},
       };
@@ -96,6 +75,8 @@ class KaCustomizer extends HTMLElement {
     if (requestedCanvas) {
       const index = this.config.canvases.findIndex((c) => c.key === requestedCanvas);
       if (index >= 0) this.state.canvasIndex = index;
+    const garmentSelect = this.querySelector('[data-kc-garment]');
+    if (garmentSelect) garmentSelect.value = String(index);
     }
 
     // ?zone=x,y,w,h lets the zone picker preview a restricted area on the
@@ -109,11 +90,81 @@ class KaCustomizer extends HTMLElement {
       }
     }
 
+    await document.fonts.ready;
+    this.config.designs.forEach((design) => {
+      if (design.text) design.src = this.textArtwork(design.text, '#ffffff');
+    });
+    const garmentSelect = this.querySelector('[data-kc-garment]');
+    if (garmentSelect) garmentSelect.innerHTML = this.config.canvases.map((canvas, index) => `<option value="${index}">${this.escape(canvas.label)}</option>`).join('');
     this.renderDesignTray();
     this.setCanvas(this.state.canvasIndex);
     this.importHomepageDesign(params);
     this.bindEvents();
     this.bindSheet();
+  }
+
+  escape(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+  }
+
+  prepareCatalog(products) {
+    const groups = new Map();
+    products.forEach((product) => {
+      const key = product.group || product.key;
+      if (!groups.has(key)) groups.set(key, { ...product, key, variants: [], colorways: [] });
+      const group = groups.get(key);
+      const combinations = new Map();
+      (product.variants || []).filter(Boolean).forEach((variant) => {
+        const sourceKey = `${product.key}|${variant.color}|${variant.style}`;
+        if (!combinations.has(sourceKey)) {
+          let name = variant.color;
+          const duplicateCount = group.colorways.filter((colorway) => colorway.color === variant.color).length;
+          if (duplicateCount) name += ` · ${duplicateCount + 1}`;
+          const photos = (product.photos || []).filter(Boolean);
+          const frontIndex = photos.indexOf(variant.front);
+          const back = frontIndex >= 0 && frontIndex % 2 === 0 ? (photos[frontIndex + 1] || '') : '';
+          const colorway = { name, color: variant.color, front: variant.front, back, sourceKey };
+          group.colorways.push(colorway);
+          combinations.set(sourceKey, colorway);
+        }
+        group.variants.push({ ...variant, colorway: combinations.get(sourceKey).name });
+      });
+    });
+    return [...groups.values()].filter((group) => group.variants.length && group.colorways.length);
+  }
+
+  textArtwork(text, color) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    const family = getComputedStyle(document.documentElement).getPropertyValue('--font-heading').trim() || getComputedStyle(this.querySelector('h1')).fontFamily;
+    context.font = `700 200px ${family}`;
+    canvas.width = Math.ceil(context.measureText(text).width) + 24;
+    canvas.height = 260;
+    context.font = `700 200px ${family}`;
+    context.fillStyle = color;
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(text, canvas.width / 2, 130);
+    return canvas.toDataURL('image/png');
+  }
+
+  addText() {
+    const input = this.querySelector('[data-kc-text]');
+    const text = input.value.trim().slice(0, 32);
+    if (!text) { input.focus(); return; }
+    const color = this.querySelector('[data-kc-ink]').value;
+    const index = this.config.designs.length;
+    this.config.designs.push({ key: `text-${index}`, label: text, text, color, src: this.textArtwork(text, color), price: 0 });
+    const placement = this.currentPlacements[this.state.selected];
+    if (placement && this.config.designs[placement.design]?.text) {
+      placement.design = index;
+      this.renderPlacements();
+      this.updateCommerce();
+    } else this.addPlacement(index);
+  }
+
+  get currentVariants() {
+    return this.currentCanvas.variants.filter((variant) => variant.colorway === this.currentColorway.name);
   }
 
   importHomepageDesign(params) {
@@ -147,7 +198,7 @@ class KaCustomizer extends HTMLElement {
   // garment actually offers a choice; that test mirrors renderSizes so
   // there is a single definition of "does this control apply".
   get steps() {
-    const variants = this.currentCanvas.variants;
+    const variants = this.currentVariants;
     const hasSize =
       variants.length > 1 || (variants.length === 1 && variants[0].title !== 'Default Title');
     return ['design', 'size', 'review'].filter((step) => step !== 'size' || hasSize);
@@ -210,7 +261,7 @@ class KaCustomizer extends HTMLElement {
       const count = this.designCount();
       return count ? `${count} placed` : 'None yet';
     }
-    if (step === 'size') return this.currentCanvas.variants[this.state.sizeIndex]?.title || '';
+    if (step === 'size') return this.currentVariants[this.state.sizeIndex]?.title || '';
     const base = this.basePriceCents();
     return base == null ? '' : money(base + this.feeDollars() * 100);
   }
@@ -223,14 +274,14 @@ class KaCustomizer extends HTMLElement {
     if (canvas.colorways.length > 1) {
       rows.push(['Colour', this.currentColorway?.name || '']);
     }
-    const size = canvas.variants[this.state.sizeIndex]?.title;
+    const size = this.currentVariants[this.state.sizeIndex]?.title;
     if (size && size !== 'Default Title') rows.push(['Size', size]);
     rows.push(['Designs', this.designCount() ? `${this.designCount()} placed` : 'None']);
     const base = this.basePriceCents();
     if (base != null) rows.push(['Total', money(base + this.feeDollars() * 100)]);
 
     holder.innerHTML = rows
-      .map(([term, value]) => `<div class="kc__summary-row"><dt>${term}</dt><dd>${value}</dd></div>`)
+      .map(([term, value]) => `<div class="kc__summary-row"><dt>${term}</dt><dd>${this.escape(value)}</dd></div>`)
       .join('');
   }
 
@@ -349,9 +400,9 @@ class KaCustomizer extends HTMLElement {
         .map((d, i) => {
           const badge = this.feesEnabled && d.price > 0 ? `<span class="kc__design-price">+$${d.price}</span>` : '';
           return `
-        <button type="button" class="kc__design" data-kc-design="${i}" aria-label="Add ${d.label}">
-          <span class="kc__design-art"><img src="${d.src}" alt="" loading="lazy" crossorigin="anonymous"></span>
-          <span class="kc__design-label">${d.label}</span>
+        <button type="button" class="kc__design" data-kc-design="${i}" aria-label="Add ${this.escape(d.label)}">
+          <span class="kc__design-art${d.text ? ' kc__design-art--lettering' : ''}"><img src="${d.src}" alt="" loading="lazy" crossorigin="anonymous"></span>
+          <span class="kc__design-label">${this.escape(d.label)}</span>
           <span class="kc__design-add" aria-hidden="true">+</span>
           ${badge}
         </button>`;
@@ -361,7 +412,13 @@ class KaCustomizer extends HTMLElement {
   }
 
   bindEvents() {
+    this.querySelector('[data-kc-garment]')?.addEventListener('change', (event) => this.setCanvas(Number(event.target.value)));
+    this.querySelector('[data-kc-text]')?.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') { event.preventDefault(); this.addText(); }
+    });
     this.addEventListener('click', (event) => {
+      if (this.submitting) return;
+      if (event.target.closest('[data-kc-add-text]')) return this.addText();
       const stepButton = event.target.closest('[data-kc-step]');
       if (stepButton) return this.setStep(stepButton.dataset.kcStep);
 
@@ -518,7 +575,7 @@ class KaCustomizer extends HTMLElement {
     }
     this.state.colorwayByCanvas[canvas.key] = this.state.colorwayIndex;
 
-    const firstAvailable = this.currentCanvas.variants.findIndex((v) => v.available);
+    const firstAvailable = this.currentVariants.findIndex((v) => v.available);
     this.state.sizeIndex = firstAvailable >= 0 ? firstAvailable : 0;
     this.hideTools();
 
@@ -557,7 +614,7 @@ class KaCustomizer extends HTMLElement {
         (colorway, index) => `
           <button type="button" class="kc__colorway" data-kc-colorway="${index}" aria-current="${index === this.state.colorwayIndex}">
             <span class="kc__colorway-thumb"><img src="${colorway.front}" alt="" loading="lazy"></span>
-            <span>${colorway.name}</span>
+            <span>${this.escape(colorway.name)}</span>
           </button>`
       )
       .join('');
@@ -570,6 +627,9 @@ class KaCustomizer extends HTMLElement {
     if (!this.currentColorway.back && this.state.view === 'back') this.state.view = 'front';
     this.state.selected = null;
     this.hideTools();
+    const firstAvailable = this.currentVariants.findIndex((variant) => variant.available);
+    this.state.sizeIndex = firstAvailable >= 0 ? firstAvailable : 0;
+    this.renderSizes();
     this.renderColorways();
     this.updateViewSwitch();
     this.updatePhoto();
@@ -648,7 +708,7 @@ class KaCustomizer extends HTMLElement {
     const holder = this.querySelector('[data-kc-sizes]');
     if (!group || !holder) return;
 
-    const variants = this.currentCanvas.variants;
+    const variants = this.currentVariants;
     const hasSizes = variants.length > 1 || (variants.length === 1 && variants[0].title !== 'Default Title');
     group.hidden = !hasSizes;
     if (!hasSizes) return;
@@ -681,12 +741,12 @@ class KaCustomizer extends HTMLElement {
   /* -- commerce ----------------------------------------------------------- */
 
   selectedVariant() {
-    const variants = this.currentCanvas.variants;
+    const variants = this.currentVariants;
     return variants[this.state.sizeIndex]?.id || this.currentCanvas.variant;
   }
 
   basePriceCents() {
-    const variants = this.currentCanvas.variants;
+    const variants = this.currentVariants;
     return variants[this.state.sizeIndex]?.price ?? this.currentCanvas.price;
   }
 
@@ -706,12 +766,12 @@ class KaCustomizer extends HTMLElement {
     const addButton = this.querySelector('[data-kc-add]');
     const note = this.querySelector('[data-kc-note]');
     const variant = this.selectedVariant();
-    const chosen = this.currentCanvas.variants[this.state.sizeIndex];
+    const chosen = this.currentVariants[this.state.sizeIndex];
     if (addButton) {
       addButton.hidden = !variant;
       // Unavailable sizes are disabled in the grid, but a deep link plus a
       // stale index could still land on one.
-      addButton.disabled = Boolean(variant) && Boolean(chosen) && !chosen.available;
+      addButton.disabled = !variant || !chosen?.available || this.designCount() === 0;
     }
     if (note) note.hidden = Boolean(variant);
     const stockNote = this.querySelector('[data-kc-stock-note]');
@@ -778,6 +838,11 @@ class KaCustomizer extends HTMLElement {
 
   select(index) {
     this.state.selected = index;
+    const design = this.config.designs[this.currentPlacements[index]?.design];
+    const input = this.querySelector('[data-kc-text]');
+    if (input) input.value = design?.text || '';
+    const ink = this.querySelector('[data-kc-ink]');
+    if (ink && design?.text) ink.value = design.color || '#ffffff';
     if (index === null) this.hideTools();
     else if (this.tools) {
       this.tools.hidden = false;
@@ -811,7 +876,7 @@ class KaCustomizer extends HTMLElement {
       <div class="kc__item${i === this.state.selected ? ' kc__item--selected' : ''}"
            data-kc-item="${i}"
            style="left: ${p.x}%; top: ${p.y}%; width: ${24 * p.scale}%; transform: translate(-50%, -50%) rotate(${p.rot}deg);">
-        <img src="${design.src}" alt="${design.label}" draggable="false" crossorigin="anonymous">
+        <img src="${design.src}" alt="${this.escape(design.label)}" draggable="false" crossorigin="anonymous">
       </div>`;
       })
       .join('');
@@ -823,7 +888,7 @@ class KaCustomizer extends HTMLElement {
     const label = this.config.designs[p.design]?.label || 'Design';
     const scale = p.scale !== 1 ? ` ×${p.scale.toFixed(2)}` : '';
     const rot = p.rot ? ` ${p.rot}°` : '';
-    return `${label} @ (${Math.round(p.x)}%, ${Math.round(p.y)}%)${scale}${rot}`;
+    return `${label}${scale}${rot}`;
   }
 
   summarize() {
@@ -853,7 +918,7 @@ class KaCustomizer extends HTMLElement {
       const design = this.config.designs[p.design];
       if (!design) continue;
       const img = await this.loadImage(design.src, true);
-      if (!img) continue;
+      if (!img) throw new Error(this.config.strings.proofError);
       const w = panelWidth * 0.24 * p.scale;
       const h = w * (img.naturalHeight / img.naturalWidth);
       ctx.save();
@@ -866,7 +931,7 @@ class KaCustomizer extends HTMLElement {
 
   async renderPreview() {
     try {
-      const width = 900;
+      const width = 2400;
       const canvasDef = this.currentCanvas;
       const colorway = this.currentColorway;
       const frontPlacements = this.state.placements[`${canvasDef.key}-front`] || [];
@@ -874,8 +939,9 @@ class KaCustomizer extends HTMLElement {
       const showBack = Boolean(colorway.back) && backPlacements.length > 0;
 
       const frontImage = await this.loadImage(colorway.front, true);
-      if (!frontImage) return null;
+      if (!frontImage) throw new Error(this.config.strings.proofError);
       const backImage = showBack ? await this.loadImage(colorway.back, true) : null;
+      if (showBack && !backImage) throw new Error(this.config.strings.proofError);
 
       const gap = showBack ? 8 : 0;
       const panelWidth = showBack ? Math.round((width - gap) / 2) : width;
@@ -912,27 +978,22 @@ class KaCustomizer extends HTMLElement {
     return thumb.toDataURL('image/jpeg', 0.75);
   }
 
-  async uploadPreview(canvas) {
-    const { cloud, preset } = this.config.upload;
-    if (!cloud || !preset) return null;
-    try {
-      const body = new FormData();
-      body.append('file', canvas.toDataURL('image/jpeg', 0.85));
-      body.append('upload_preset', preset);
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 10000);
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloud}/image/upload`, {
-        method: 'POST',
-        body,
-        signal: controller.signal,
-      });
-      clearTimeout(timer);
-      const data = await response.json();
-      return data.secure_url || null;
-    } catch (error) {
-      console.error('[studio] preview upload failed (order will carry coordinates only):', error);
-      return null;
-    }
+  async imageFile(canvas, name) {
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) throw new Error(this.config.strings.proofError);
+    return new File([blob], name, { type: 'image/png' });
+  }
+
+  async artworkFile(side, designId) {
+    const placements = this.state.placements[`${this.currentCanvas.key}-${side}`] || [];
+    if (!placements.length) return null;
+    const image = await this.loadImage(this.currentColorway[side], true);
+    if (!image) throw new Error(this.config.strings.proofError);
+    const canvas = document.createElement('canvas');
+    canvas.width = 2400;
+    canvas.height = Math.round(2400 * image.naturalHeight / image.naturalWidth);
+    await this.paintPlacements(canvas.getContext('2d'), placements, 0, canvas.width, canvas.height);
+    return this.imageFile(canvas, `${designId}-${side}-artwork.png`);
   }
 
   /* -- cart --------------------------------------------------------------- */
@@ -948,6 +1009,7 @@ class KaCustomizer extends HTMLElement {
       _design_id: designId,
       _config: JSON.stringify({
         canvas: canvas.key,
+        designs: this.config.designs.map(({ key, label, text, color }) => ({ key, label, text, color })),
         colorway,
         placements: {
           front: this.state.placements[`${canvas.key}-front`] || [],
@@ -959,7 +1021,10 @@ class KaCustomizer extends HTMLElement {
 
   async addToCart() {
     const variant = this.selectedVariant();
-    if (!variant) return;
+    if (!variant || this.submitting || !this.currentVariants[this.state.sizeIndex]?.available || this.designCount() === 0) return;
+    this.submitting = true;
+    const lockedControls = [...this.querySelectorAll('button, input, select')].map((element) => [element, element.disabled]);
+    lockedControls.forEach(([element]) => { element.disabled = true; });
 
     const addButton = this.querySelector('[data-kc-add]');
     const addLabel = addButton?.querySelector('span:first-child');
@@ -977,32 +1042,40 @@ class KaCustomizer extends HTMLElement {
     try {
       const designId = `kad-${Date.now().toString(36)}${Math.floor(Math.random() * 1e4)}`;
       const preview = await this.renderPreview();
-      let previewUrl = null;
-      if (preview) {
-        window.themeDesignPreviews?.put(designId, this.thumbnailDataUrl(preview));
-        previewUrl = await this.uploadPreview(preview);
+      if (!preview) throw new Error(this.config.strings.proofError);
+      window.themeDesignPreviews?.put(designId, this.thumbnailDataUrl(preview));
+      const properties = this.buildProperties(designId, null);
+      const body = new FormData();
+      body.append('id', variant);
+      body.append('quantity', '1');
+      Object.entries(properties).forEach(([key, value]) => body.append(`properties[${key}]`, value));
+      const attachmentKeys = ['Design preview'];
+      body.append('properties[Design preview]', await this.imageFile(preview, `${designId}-proof.png`));
+      for (const side of ['front', 'back']) {
+        const artwork = await this.artworkFile(side, designId);
+        if (artwork) {
+          const key = `${side === 'front' ? 'Front' : 'Back'} artwork`;
+          attachmentKeys.push(key);
+          body.append(`properties[${key}]`, artwork);
+        }
       }
-
-      const properties = this.buildProperties(designId, previewUrl);
-      const items = [{ id: Number(variant), quantity: 1, properties }];
-
-      const fee = this.feeDollars();
-      if (fee > 0 && this.config.feeVariant) {
-        items.push({
-          id: Number(this.config.feeVariant),
-          quantity: fee,
-          properties: { For: this.currentCanvas.label, _design_id: designId },
-        });
-      }
-
       const response = await fetch(customizerRoute('cart/add.js'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ items }),
+        headers: { Accept: 'application/json' },
+        body,
       });
       const data = await response.json();
       if (!response.ok || data.status) throw new Error(data.description || data.message);
       itemWasAdded = true;
+      const addedItem = data.items?.[0] || data;
+      if (attachmentKeys.some((key) => !/^https:\/\/cdn\.shopify\.com\/.*\/uploads\//.test(addedItem.properties?.[key] || ''))) {
+        await fetch(customizerRoute('cart/change.js'), {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: addedItem.key, quantity: 0 }),
+        });
+        itemWasAdded = false;
+        throw new Error(this.config.strings.attachmentError);
+      }
       const cartResponse = await fetch(customizerRoute('cart.js'));
       if (!cartResponse.ok) throw new Error(window.themeStrings?.genericError || 'Something went wrong. Please try again.');
       const cart = await cartResponse.json();
@@ -1020,6 +1093,8 @@ class KaCustomizer extends HTMLElement {
         errorEl.hidden = false;
       }
     } finally {
+      this.submitting = false;
+      lockedControls.forEach(([element, disabled]) => { element.disabled = disabled; });
       addButton?.removeAttribute('aria-disabled');
       if (addLabel && initialLabel) window.setTimeout(() => { addLabel.textContent = initialLabel; }, 900);
       this.updateCommerce();

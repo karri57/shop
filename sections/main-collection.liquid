@@ -48,7 +48,13 @@
 
     {%- if collection.products.size > 0 -%}
       <div class="product-grid collection__product-grid" style="--grid-columns: {{ section.settings.columns }};">
+        {%- assign hoodie_family_rendered = false -%}
         {%- for product in collection.products -%}
+          {%- if product.handle contains 'vintage-washed-frayed-hem-hoodie' -%}
+            {%- if hoodie_family_rendered -%}{%- continue -%}{%- endif -%}
+            {%- assign product = all_products['vintage-washed-frayed-hem-hoodie'] -%}
+            {%- assign hoodie_family_rendered = true -%}
+          {%- endif -%}
           {%- liquid
             assign is_priority = false
             if forloop.index <= 4

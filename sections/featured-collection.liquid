@@ -29,7 +29,13 @@
 
     {%- if collection.products.size > 0 -%}
       <div class="product-grid editorial-collection__grid" style="--grid-columns: {{ section.settings.columns }};">
+        {%- assign hoodie_family_rendered = false -%}
         {%- for product in collection.products limit: section.settings.products_to_show -%}
+          {%- if product.handle contains 'vintage-washed-frayed-hem-hoodie' -%}
+            {%- if hoodie_family_rendered -%}{%- continue -%}{%- endif -%}
+            {%- assign product = all_products['vintage-washed-frayed-hem-hoodie'] -%}
+            {%- assign hoodie_family_rendered = true -%}
+          {%- endif -%}
           {%- liquid
             assign is_priority = false
             if section.index <= 2 and forloop.index <= 4

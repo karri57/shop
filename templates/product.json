@@ -11,16 +11,15 @@
   "sections": {
     "main": {
       "type": "main-product",
-      "settings": {
-        "show_newsletter_incentive": true
-      },
       "blocks": {
         "product_details": {
           "type": "accordion_item",
           "settings": {
             "title": "Product details",
+            "open_by_default": true,
             "use_description": true,
-            "open_by_default": true
+            "content": "",
+            "limit_product_types": ""
           }
         },
         "size_chart": {
@@ -39,7 +38,8 @@
             "title": "Shipping details",
             "open_by_default": false,
             "use_description": false,
-            "content": ""
+            "content": "",
+            "limit_product_types": ""
           }
         },
         "garment_care": {
@@ -48,11 +48,22 @@
             "title": "Garment care",
             "open_by_default": false,
             "use_description": false,
-            "content": "<ul><li>Machine wash cold.</li><li>Wash separately.</li><li>Use a low-spin or no-spin cycle.</li><li>Do not bleach.</li><li>Hang dry only.</li></ul>"
+            "content": "<h3>Care&nbsp;Instructions</h3><p>-&nbsp;Machine&nbsp;wash&nbsp;at&nbsp;30°C&nbsp;(gentle&nbsp;cycle)</p><p>-&nbsp;Do&nbsp;not&nbsp;bleach</p><p>-&nbsp;Tumble&nbsp;dry&nbsp;low</p><p>-&nbsp;Iron&nbsp;at&nbsp;low&nbsp;temperature,&nbsp;avoid&nbsp;ironing&nbsp;on&nbsp;print</p>",
+            "limit_product_types": ""
           }
         }
       },
-      "block_order": ["product_details", "size_chart", "shipping_details", "garment_care"]
+      "block_order": [
+        "product_details",
+        "size_chart",
+        "shipping_details",
+        "garment_care"
+      ],
+      "settings": {
+        "fit_note": "",
+        "show_newsletter_incentive": true,
+        "low_stock_threshold": 5
+      }
     },
     "recommendations": {
       "type": "product-recommendations",
@@ -62,5 +73,8 @@
       }
     }
   },
-  "order": ["main", "recommendations"]
+  "order": [
+    "main",
+    "recommendations"
+  ]
 }

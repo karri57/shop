@@ -1,5 +1,11 @@
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
+  assign size_chart_file = product.metafields.custom.size_chart_image.value
+  if size_chart_file == blank and product.handle contains 'vintage-washed-frayed-hem-hoodie-'
+    assign hoodie_family = all_products['vintage-washed-frayed-hem-hoodie']
+    assign size_chart_file = hoodie_family.metafields.custom.size_chart_image.value
+  endif
+  assign size_chart_image = size_chart_file.preview_image
 
   assign color_option_index = -1
   for option in product.options_with_values
@@ -205,6 +211,11 @@
         {%- if block.type == 'accordion_item' -%}
           {%- liquid
             assign show_block = true
+            assign accordion_title = block.settings.title | handleize
+            assign is_size_chart = block.settings.use_size_chart
+            if accordion_title == 'size-chart' or accordion_title == 'size-guide'
+              assign is_size_chart = true
+            endif
             if block.settings.limit_product_types != blank
               assign show_block = false
               assign allowed_types = block.settings.limit_product_types | split: ','
@@ -217,6 +228,9 @@
               endfor
             endif
           -%}
+          {%- if is_size_chart and size_chart_image == blank and block.settings.content == blank -%}
+            {%- unless request.design_mode -%}{%- assign show_block = false -%}{%- endunless -%}
+          {%- endif -%}
           {%- if show_block -%}
             <details class="accordion-item" {% if block.settings.open_by_default %}open{% endif %} {{ block.shopify_attributes }}>
               <summary class="accordion-item__summary">
@@ -224,7 +238,19 @@
                 <span class="accordion-item__icon">{% render 'icon', name: 'caret' %}</span>
               </summary>
               <div class="accordion-item__content rich-text">
-                {%- if block.settings.use_description -%}
+                {%- if is_size_chart -%}
+                  {%- if size_chart_image != blank -%}
+                    {%- assign chart_alt = 'products.product.size_chart_alt' | t: product: product.title -%}
+                    <a class="product__size-chart" href="{{ size_chart_image | image_url: width: 4000 }}" target="_blank" rel="noopener" aria-label="{{ 'products.product.size_chart_open' | t | escape }}">
+                      {{ size_chart_image | image_url: width: 1600 | image_tag: widths: '400,800,1200,1600', sizes: '(min-width: 990px) 45vw, 100vw', loading: 'lazy', alt: chart_alt }}
+                      <span class="link-underline">{{ 'products.product.size_chart_open' | t }}</span>
+                    </a>
+                  {%- elsif block.settings.content != blank -%}
+                    {{ block.settings.content }}
+                  {%- elsif request.design_mode -%}
+                    <p>{{ 'products.product.size_chart_upload_hint' | t }}</p>
+                  {%- endif -%}
+                {%- elsif block.settings.use_description -%}
                   {{ product.description }}
                 {%- else -%}
                   {{ block.settings.content }}
@@ -254,6 +280,13 @@
     });
   });
 </script>
+
+{% stylesheet %}
+  .product__size-chart { display: block; }
+  .product__size-chart img { display: block; width: 100%; height: auto; margin: 0; }
+  .product__size-chart > span { display: inline-block; margin-top: 0.75rem; font-size: 0.75rem; }
+  .product__size-chart:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -290,6 +323,7 @@
       "settings": [
         { "type": "text", "id": "title", "label": "Title", "default": "Details" },
         { "type": "checkbox", "id": "open_by_default", "label": "Open by default", "default": false },
+        { "type": "checkbox", "id": "use_size_chart", "label": "Use this product's size chart image", "default": false, "info": "Upload the image on the product's admin page under Metafields → Size chart image." },
         { "type": "checkbox", "id": "use_description", "label": "Use product description", "default": false },
         { "type": "richtext", "id": "content", "label": "Content", "visible_if": "{{ block.settings.use_description == false }}" },
         {
@@ -304,7 +338,7 @@
   "default": {
     "blocks": [
       { "type": "accordion_item", "settings": { "title": "Product details", "use_description": true, "open_by_default": true } },
-      { "type": "accordion_item", "settings": { "title": "Size guide" } },
+      { "type": "accordion_item", "settings": { "title": "Size guide", "use_size_chart": true } },
       { "type": "accordion_item", "settings": { "title": "Shipping" } },
       { "type": "accordion_item", "settings": { "title": "Garment care" } }
     ]

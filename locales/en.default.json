@@ -79,7 +79,10 @@
       "newsletter_incentive_link": "join our newsletter today!",
       "low_stock": "Only {{ count }} left in stock",
       "free_shipping_note": "Free shipping on orders over {{ amount }}",
-      "secure_checkout": "Secure checkout · encrypted payment"
+      "secure_checkout": "Secure checkout · encrypted payment",
+      "size_chart_alt": "Size chart for {{ product }}",
+      "size_chart_open": "Open full-size chart",
+      "size_chart_upload_hint": "Upload this product’s chart in Shopify Admin → Products → this product → Metafields → Size chart image."
     }
   },
   "collections": {

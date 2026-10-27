@@ -26,6 +26,7 @@
           "type": "accordion_item",
           "settings": {
             "title": "Size chart",
+            "use_size_chart": true,
             "open_by_default": false,
             "use_description": false,
             "content": "",

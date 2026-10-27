@@ -12,9 +12,9 @@
     "coming-soon": {
       "type": "hero",
       "settings": {
-        "image": "shopify://shop_images/IMG_2324.jpg",
-        "mobile_image": "shopify://shop_images/IMG_2324.jpg",
-        "eyebrow": "School Boy Collection",
+        "image": "shopify://shop_images/AFBF2F24-FACD-4BEF-8D48-46B7E1356C22.png",
+        "mobile_image": "shopify://shop_images/AFBF2F24-FACD-4BEF-8D48-46B7E1356C22.png",
+        "eyebrow": "F/W 2026",
         "heading": "Out Now",
         "heading_tag": "h1",
         "text": "",
@@ -61,7 +61,8 @@
           "settings": {
             "label": "Classic Polo",
             "canvas_key": "classic-polo",
-            "product": "custom-classic-polo"
+            "product": "custom-classic-polo",
+            "colorway": ""
           }
         },
         "canvas-tee": {
@@ -69,7 +70,8 @@
           "settings": {
             "label": "Classic Tee",
             "canvas_key": "classic-tee",
-            "product": "custom-classic-tee"
+            "product": "custom-classic-tee",
+            "colorway": ""
           }
         },
         "brand-mark": {
@@ -91,6 +93,7 @@
         "heading_outline": "Made yours",
         "text": "Your piece. Your perspective. Start with a silhouette, choose your artwork, and make it personal.",
         "button_label": "Continue in studio",
+        "studio_link": "",
         "link": "shopify://pages/create-your-own",
         "trust_note": "Signature artwork. A personal point of view.",
         "shirt_image": "shopify://shop_images/c200b860beda4b769b54a13a30aa77ed.png"

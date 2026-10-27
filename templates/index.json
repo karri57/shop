@@ -102,8 +102,10 @@
     "best-sellers-banner": {
       "type": "hero",
       "settings": {
+        "image": "shopify://shop_images/IMG_2331.jpg",
+        "mobile_image": "shopify://shop_images/IMG_2331.jpg",
         "eyebrow": "",
-        "heading": "BEST SELLERS",
+        "heading": "FIG SWEATER COLLECTION",
         "heading_tag": "h2",
         "text": "",
         "button_label": "SHOP ALL",
@@ -135,8 +137,9 @@
     "stillwater-banner": {
       "type": "hero",
       "settings": {
-        "eyebrow": "FRESH",
-        "heading": "STILLWATER",
+        "image": "shopify://shop_images/IMG_2428.jpg",
+        "eyebrow": "GOD IS GOOD",
+        "heading": "COLLECTION",
         "heading_tag": "h2",
         "text": "",
         "button_label": "SHOP ALL",

@@ -171,8 +171,9 @@
     "beanies-banner": {
       "type": "hero",
       "settings": {
-        "eyebrow": "ACCESSORIES",
-        "heading": "HONOR PATCH BEANIES",
+        "image": "shopify://shop_images/IMG_2211.jpg",
+        "eyebrow": "PROVERBS 31",
+        "heading": "Woman’s Line",
         "heading_tag": "h2",
         "text": "",
         "button_label": "SHOP ALL",

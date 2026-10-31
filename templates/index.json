@@ -11,6 +11,7 @@
   "sections": {
     "coming-soon": {
       "type": "hero",
+      "disabled": true,
       "settings": {
         "image": "shopify://shop_images/AFBF2F24-FACD-4BEF-8D48-46B7E1356C22.png",
         "mobile_image": "shopify://shop_images/AFBF2F24-FACD-4BEF-8D48-46B7E1356C22.png",

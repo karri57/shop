@@ -87,6 +87,7 @@
         "canvas-tee",
         "brand-mark"
       ],
+      "disabled": true,
       "settings": {
         "eyebrow": "The KA Custom Studio",
         "heading_solid": "Made by us.",

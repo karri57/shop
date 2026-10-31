@@ -101,6 +101,40 @@
         "shirt_image": "shopify://shop_images/c200b860beda4b769b54a13a30aa77ed.png"
       }
     },
+    "stillwater-banner": {
+      "type": "hero",
+      "settings": {
+        "image": "shopify://shop_images/IMG_2428.jpg",
+        "eyebrow": "GOD IS GOOD",
+        "heading": "COLLECTION",
+        "heading_tag": "h2",
+        "text": "",
+        "button_label": "SHOP ALL",
+        "button_link": "shopify://collections/all",
+        "button_style": "light",
+        "background": "black",
+        "content_position": "bottom",
+        "text_alignment": "centered",
+        "height_mobile": 700,
+        "height_desktop": 820,
+        "overlay_opacity": 20
+      }
+    },
+    "stillwater-products": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "",
+        "heading": "",
+        "collection": "god-is-good",
+        "products_to_show": 4,
+        "columns": 4,
+        "image_fit": "contain",
+        "show_filters": false,
+        "show_new_badge": false,
+        "show_view_all": true,
+        "view_all_label": "VIEW ALL PRODUCTS"
+      }
+    },
     "best-sellers-banner": {
       "type": "hero",
       "settings": {
@@ -121,25 +155,6 @@
         "overlay_opacity": 20
       }
     },
-    "stillwater-banner": {
-      "type": "hero",
-      "settings": {
-        "image": "shopify://shop_images/IMG_2428.jpg",
-        "eyebrow": "GOD IS GOOD",
-        "heading": "COLLECTION",
-        "heading_tag": "h2",
-        "text": "",
-        "button_label": "SHOP ALL",
-        "button_link": "shopify://collections/all",
-        "button_style": "light",
-        "background": "black",
-        "content_position": "bottom",
-        "text_alignment": "centered",
-        "height_mobile": 700,
-        "height_desktop": 820,
-        "overlay_opacity": 20
-      }
-    },
     "best-seller-products": {
       "type": "featured-collection",
       "settings": {
@@ -155,27 +170,12 @@
         "view_all_label": "VIEW ALL PRODUCTS"
       }
     },
-    "stillwater-products": {
-      "type": "featured-collection",
-      "settings": {
-        "eyebrow": "",
-        "heading": "",
-        "collection": "god-is-good",
-        "products_to_show": 4,
-        "columns": 4,
-        "image_fit": "contain",
-        "show_filters": false,
-        "show_new_badge": false,
-        "show_view_all": true,
-        "view_all_label": "VIEW ALL PRODUCTS"
-      }
-    },
     "beanies-banner": {
       "type": "hero",
       "settings": {
-        "image": "shopify://shop_images/IMG_2211.jpg",
-        "eyebrow": "PROVERBS 31",
-        "heading": "Woman’s Line",
+        "image": "shopify://shop_images/6C235193-B4A3-49C1-BF4B-38F83DA7E52F.png",
+        "eyebrow": "God Is Good",
+        "heading": "Hats",
         "heading_tag": "h2",
         "text": "",
         "button_label": "SHOP ALL",
